@@ -1,135 +1,173 @@
 import 'package:flutter/material.dart';
-import 'package:hls_network/screens/screens.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hls_network/features/screens.dart';
+import 'package:hls_network/themes/themes_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class DrawerWidget extends StatelessWidget {
-  final ThemeMode themeMode;
-  final ValueChanged<ThemeMode> onThemeChanged;
-  final BuildContext context; 
-  const DrawerWidget({
-    Key? key,
-    required this.onThemeChanged,
-    required this.themeMode,
-    required this.context,  
-  }) : super(key: key);
-  Widget _themeleading(){
-    if(themeMode==ThemeMode.system){
-       Brightness brightness = MediaQuery.of(context).platformBrightness;
-      if (brightness == Brightness.dark) {
-        return Icon(Icons.dark_mode);
-      } else {
-        return  Icon(Icons.light_mode);
-      }
-    }
-    else if(themeMode==ThemeMode.light){
-     return Icon(Icons.light_mode); 
-    }
-    return Icon(Icons.dark_mode);
+import '../auth/login.dart';
+
+class DrawerWidget extends ConsumerStatefulWidget {
+  const DrawerWidget({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<DrawerWidget> createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends ConsumerState<DrawerWidget> {
+  void toggleTheme(WidgetRef ref) {
+    ref.read(themeNotifierProvider.notifier).toggleTheme();
   }
+
   @override
   Widget build(BuildContext context) {
+    final currentTheme = ref.watch(themeNotifierProvider);
     return Drawer(
       child: Container(
-        color:Theme.of(context).brightness==Brightness.dark? Colors.grey[900]: Color.fromARGB(255, 245, 237, 245), 
+        color: Theme.of(context).colorScheme.primary,
         child: ListView(
           children: <Widget>[
-             DrawerHeader(
-              decoration: BoxDecoration(),
-              child:Row(
+            DrawerHeader(
+              decoration: const BoxDecoration(),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: const [
                       CircleAvatar(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Pallete.appBarColor,
                         radius: 50.0,
                       ),
-                      SizedBox(height: 10,),
-                      Text("username"),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.close)),
-                      Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children:const [
-                            Text("Followers: 200"),
-                            SizedBox(height: 20,),
-                            Text("Followings: 500"),
-                          ],
-                        ),
+                      SizedBox(
+                        height: 10,
                       ),
+                      Text("username"),
                     ],
                   ),
                 ],
               ),
             ),
-            ListTile(leading: Icon(Icons.person),
-            title: Text("Profile"),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>Profile()));
-            },
-            ),
-           Theme(
-            data: Theme.of(context).copyWith(
-              dividerColor: Colors.transparent,
-            ),
-             child: ExpansionTile(title: const Text('Themes'),
-              leading: _themeleading(),
-              children: [ ListTile(
-                title: Text('System Theme'),
-                leading: Radio(
-                  value: ThemeMode.system,
-                  groupValue: themeMode,
-                  onChanged: (value) {
-                    if (value != null) {
-                       onThemeChanged(value);
-                    }
-                  },
-                ),
-                onTap: () {
-                  onThemeChanged(ThemeMode.system);
-                },
+            ListTile(
+              leading: Icon(
+                Icons.person,
+                color: currentTheme.brightness == Brightness.light
+                    ? currentTheme.colorScheme.secondary
+                    : Pallete.whiteColor,
               ),
-              ListTile(
-                title: Text('Light Theme'),
-                leading: Radio(
-                  value: ThemeMode.light,
-                  groupValue: themeMode,
-                  onChanged: (value) {
-                    if (value != null) {
-                       onThemeChanged(value);
-                    }
-                  },
-                ),
-               onTap: () {
-                  onThemeChanged(ThemeMode.system);
-                },
+              title: const Text(
+                "Profile",
+                style: TextStyle(fontSize: 18),
               ),
-              ListTile(
-                title: Text('Dark Theme'),
-                leading: Radio(
-                  value: ThemeMode.dark,
-                  groupValue: themeMode,
-                  onChanged: (value) {
-                    if (value != null) {
-                       onThemeChanged(value);
-                    }
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Profile()),
+                );
+              },
+            ),
+            Theme(
+              data: Theme.of(context).copyWith(
+                dividerColor: Colors.transparent,
+              ),
+              child: ExpansionTile(
+                leading: currentTheme.brightness == Brightness.light
+                    ? Icon(
+                        Icons.light_mode,
+                        color: currentTheme.colorScheme.secondary,
+                      )
+                    : const Icon(
+                        Icons.dark_mode,
+                        color: Pallete.whiteColor,
+                      ),
+                title: Text(
+                  'Themes',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: currentTheme.brightness == Brightness.light
+                          ? Pallete.blackColor
+                          : Pallete.whiteColor),
+                ),
+                children: [
+                  ListTile(
+                    leading: const SizedBox(
+                      width: 6,
+                    ),
+                    title: const Text(
+                      'Light Mode',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    trailing: Switch(
+                      value: ref.watch(themeNotifierProvider.notifier).mode ==
+                          ThemeMode.light,
+                      onChanged: (value) {
+                        if (!value) {
+                          ref
+                              .read(themeNotifierProvider.notifier)
+                              .toggleTheme();
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      ref.read(themeNotifierProvider.notifier).toggleTheme();
+                    },
+                  ),
+                  ListTile(
+                    leading: const SizedBox(
+                      width: 6,
+                    ),
+                    title: const Text(
+                      'Dark Mode',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    trailing: Switch(
+                      value: ref.watch(themeNotifierProvider.notifier).mode ==
+                          ThemeMode.dark,
+                      onChanged: (value) {
+                        if (value) {
+                          ref
+                              .read(themeNotifierProvider.notifier)
+                              .toggleTheme();
+                        } else {
+                          ref
+                              .read(themeNotifierProvider.notifier)
+                              .toggleTheme();
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      ref.read(themeNotifierProvider.notifier).toggleTheme();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: ListTile(
+                  leading: Icon(
+                    Icons.logout,
+                    color: currentTheme.brightness == Brightness.light
+                        ? currentTheme.colorScheme.secondary
+                        : Pallete.whiteColor,
+                  ),
+                  title: const Text(
+                    "Logout",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  onTap: () {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Login()),
+                    );
                   },
                 ),
-                onTap: () {
-                  onThemeChanged(ThemeMode.system);
-                },
-              ),],),
-           ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
-
