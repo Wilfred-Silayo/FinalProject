@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','Login')
 @section('content')
-<div class="container-fluid" style="min-height:87vh;">
+<div class="container-fluid" style="min-height:85vh;">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card bg-white">
