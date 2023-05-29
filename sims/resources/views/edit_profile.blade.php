@@ -8,37 +8,6 @@
             <strong>{{ session('info') }}</strong>
         </div>
         @endif
-        <div class="col-md-4 ">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Upload Profile Photo</h4>
-                </div>
-                <div class="card-body">
-                    <div class="div">
-                        <div class="div">
-                            <img src="{{ asset('storage/'.$user->profile_photo) }}" alt="Profile Photo" width="60"
-                                height="60" style="object-fit: cover; border-radius: 50%;">
-                        </div>
-                    </div>
-                    <form method="POST" action="{{route('profile.store')}}" enctype="multipart/form-data">
-                        @csrf
-                        @method('put')
-                        <div class="form-group">
-                            <label for="profile_photo" class="mb-2">Choose Profile Photo</label>
-                            <input type="file" name="profile_photo"
-                                class=" mb-2 form-control-file @error('profile_photo') is-invalid @enderror"
-                                id="profile_photo" value="{{ old('profile_photo',$user->profile_photo) }}">
-                            @error('profile_photo')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <button type="submit" class="btn btn-primary mb-2">Upload</button>
-                    </form>
-                </div>
-            </div>
-        </div>
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">

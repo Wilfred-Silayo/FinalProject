@@ -19,7 +19,7 @@
 <body>
     <div id="app" class="bg-light">
         <!-- Top nav-bar-->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm d-flex justify-content-between">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm d-flex justify-content-between" style="min-height:10vh;">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -34,8 +34,6 @@
                     </ul>
                     @if(auth()->check())
                     <div class="nav-item dropdown d-flex align-items-center">
-                    <img src="{{ asset('storage/'.Auth::user()->profile_photo) }}"
-                            alt="Profile Photo" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
                         <div class="dropdown ms-2">
                             <a class="nav-link dropdown-toggle  bg-white" href="#" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
