@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hls_network/widgets/drawer.dart';
 import 'package:hls_network/themes/themes_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +34,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ? AppBar(
               centerTitle: true,
               title: currentTheme.brightness == Brightness.light
-                  ? const MyAppLogo(path: "assets/appicon.png")
+                  ? const MyAppIcon(path: "assets/appicon.png")
                   : const MyAppLogo(path: "assets/logo.png"),
               leading: Builder(builder: (context) {
                 return IconButton(

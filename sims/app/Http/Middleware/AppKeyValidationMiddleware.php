@@ -21,7 +21,7 @@ class AppKeyValidationMiddleware
         $appKey = $request->input('app_key');
 
         if ($appKey !== $storedAppKey) {
-            return response()->json(['error' => 'Invalid app key'], 401);
+            return response()->json(['message' => 'Invalid app key'], 401);
         }
 
         return $next($request);

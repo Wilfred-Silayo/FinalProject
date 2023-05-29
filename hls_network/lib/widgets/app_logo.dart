@@ -6,6 +6,16 @@ class MyAppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: 60, width: 60, child: Image.asset(path));
+    return SizedBox(height: 55, width: 55, child: Image.asset(path));
+  }
+}
+
+class MyAppIcon extends StatelessWidget {
+  final String path;
+  const MyAppIcon({super.key, required this.path});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(height: 65, width: 65, child: Image.asset(path));
   }
 }

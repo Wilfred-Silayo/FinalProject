@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SocialTokenController;
+use App\Models\User;
 
 
 /*
@@ -18,5 +19,7 @@ use App\Http\Controllers\SocialTokenController;
 
 Route::middleware('appkey')->group(function () {
     Route::post('/generate/token',[SocialTokenController::class,'generateToken']);
-    Route::post('/verify/token/',[SocialTokenController::class,'verifyToken']);
+    Route::post('/verify/token',[SocialTokenController::class,'verifyToken']);
 });
+
+

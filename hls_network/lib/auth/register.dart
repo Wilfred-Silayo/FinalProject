@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hls_network/features/home_screen.dart';
 import 'package:hls_network/widgets/textfield.dart';
 import 'package:hls_network/widgets/button.dart';
 import 'package:hls_network/widgets/square_tile.dart';
 import 'package:hls_network/themes/themes_helper.dart';
 import '../controller/auth_method.dart';
-import '../features/home_screen.dart';
 import '../utils/utils.dart';
 import 'login.dart';
 
 class Register extends ConsumerStatefulWidget {
-  const Register({Key? key}) : super(key: key);
+  final String uniName;
+  final String status;
+  const Register({Key? key,required this.uniName,required this.status}) : super(key: key);
 
   @override
   ConsumerState<Register> createState() => _RegisterState();
@@ -19,7 +21,6 @@ class Register extends ConsumerStatefulWidget {
 class _RegisterState extends ConsumerState<Register> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   bool _obscureText = false;
   bool _isLoading = false;
 
@@ -28,7 +29,6 @@ class _RegisterState extends ConsumerState<Register> {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _usernameController.dispose();
   }
 
   void signUpUser() async {
@@ -40,14 +40,15 @@ class _RegisterState extends ConsumerState<Register> {
     String res = await AuthMethods().signUpUser(
       email: _emailController.text,
       password: _passwordController.text,
-      username: _usernameController.text,
+      verifiedAs:widget.status,
+      uniName:widget.uniName,
     );
- 
+
     if (res == "success") {
       setState(() {
         _isLoading = false;
       });
-   
+
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => const HomeScreen(),
@@ -67,9 +68,6 @@ class _RegisterState extends ConsumerState<Register> {
     final currentTheme = ref.watch(themeNotifierProvider);
     return Scaffold(
       backgroundColor: currentTheme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -79,25 +77,11 @@ class _RegisterState extends ConsumerState<Register> {
                   height: 20,
                 ),
                 const Text(
-                  'Welcome',
-                  style: TextStyle(fontSize: 20),
+                  'Create account',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(
                   height: 40,
-                ),
-                FormInputField(
-                  textController: _usernameController,
-                  hintText: 'Username',
-                  obscureText: false,
-                  prefixIcon: Icon(
-                    Icons.person,
-                    color: currentTheme.brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
-                  ),
-                ),
-                const SizedBox(
-                  height: 30,
                 ),
                 FormInputField(
                   textController: _emailController,
@@ -106,8 +90,8 @@ class _RegisterState extends ConsumerState<Register> {
                   prefixIcon: Icon(
                     Icons.email,
                     color: currentTheme.brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+                        ? Colors.white
+                        : Colors.black,
                   ),
                 ),
                 const SizedBox(
@@ -120,8 +104,8 @@ class _RegisterState extends ConsumerState<Register> {
                   prefixIcon: Icon(
                     Icons.lock,
                     color: currentTheme.brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black,
+                        ? Colors.white
+                        : Colors.black,
                   ),
                   suffixIcon: _obscureText
                       ? Icon(

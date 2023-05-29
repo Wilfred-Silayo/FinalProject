@@ -17,8 +17,12 @@ String handleFirebaseError(dynamic error) {
       case 'weak-password':
         errorMessage = 'Password should be atleast 6 characters.';
         break;
+      case 'network-request-failed':
+        errorMessage =
+            'Network request failed. Please check your internet connection.';
+        break;
       default:
-        errorMessage = 'Invalid email or password.';
+        errorMessage = 'Something went wrong.';
         break;
     }
   } else if (error is FirebaseException) {

@@ -1,39 +1,42 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hls_network/auth/verification_token.dart';
-import 'dart:convert';
+import 'package:hls_network/auth/register.dart';
 import '../controller/sims_api.dart';
 import '../themes/themes_helper.dart';
 import '../utils/utils.dart';
 
-class VerificationScreen extends ConsumerStatefulWidget {
+class TokenVerification extends ConsumerStatefulWidget {
+  final String regNumber;
+  final String message;
   final String uniName;
   final String apiUrl;
-  final String description;
-  const VerificationScreen({
-    Key? key,
-    required this.uniName,
-    required this.apiUrl,
-    required this.description,
-  }) : super(key: key);
+  const TokenVerification(
+      {super.key,
+      required this.regNumber,
+      required this.message,
+      required this.uniName,
+      required this.apiUrl});
 
   @override
-  ConsumerState<VerificationScreen> createState() => _VerificationScreenState();
+  ConsumerState<TokenVerification> createState() => _TokenVerificationState();
 }
 
-class _VerificationScreenState extends ConsumerState<VerificationScreen> {
-  final regNoController = TextEditingController();
+class _TokenVerificationState extends ConsumerState<TokenVerification> {
+  final tokenController = TextEditingController();
+  final String message =
+      'Token generated successfully. We have sent you the token in your email that you used to register in your College, Institute or University. Also, you can find it in your SIMS account.';
   bool isLoading = false;
 
   @override
   void dispose() {
     super.dispose();
-    regNoController.dispose();
+    tokenController.dispose();
   }
 
   void verifyRegistrationNumber(context) async {
-    if (regNoController.text.isEmpty) {
-      String res = 'Registration number can\'t be empty.';
+    if (tokenController.text.isEmpty) {
+      String res = 'Token can\'t be empty.';
       showSnackBar(context, res);
       return;
     }
@@ -44,26 +47,24 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
     try {
       final response = await SimsApi(baseUrl: widget.apiUrl)
-          .generateToken(regNoController.text);
+          .verifyToken(widget.regNumber, tokenController.text);
       if (response.statusCode == 200) {
-        final message = responseMessage(response);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TokenVerification(
-              regNumber: regNoController.text,
-              message: message,
-              uniName: widget.uniName,
-              apiUrl: widget.apiUrl,
+        final status = responseMessage(response);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Register(
+                status: status,
+                uniName: widget.uniName,
+              ),
             ),
-          ),
-        );
+            (route) => false);
       } else {
         String res = responseMessage(response);
         showSnackBar(context, res);
       }
     } catch (error) {
-      String res = 'Something went wrong.';
+      String res = 'Invalid token.';
       showSnackBar(context, res);
     } finally {
       setState(() {
@@ -75,7 +76,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   String responseMessage(response) {
     String responseBody = response.body;
     Map<String, dynamic> responseData = jsonDecode(responseBody);
-    return responseData['message'];
+    return responseData['status'];
   }
 
   @override
@@ -83,25 +84,29 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     final currentTheme = ref.watch(themeNotifierProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Verification'),
+        title: const Text('Verification Token'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             const SizedBox(height: 16.0),
-            Text(
-              'Please verify that you come from ${widget.description} [${widget.uniName}] by entering your ${widget.uniName} registration number.',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.justify,
               ),
             ),
             const SizedBox(height: 16.0),
             TextField(
-              controller: regNoController,
+              controller: tokenController,
               decoration: InputDecoration(
-                labelText: 'Enter Registration Number',
+                labelText: 'Enter Verification token',
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: currentTheme.colorScheme.secondary,

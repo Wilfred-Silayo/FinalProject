@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use App\Models\SocialToken;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Middleware\NoCacheMiddleware;
+use App\Models\User;
+use App\Mail\TokenGenerated;
+use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 
@@ -29,9 +32,9 @@ class SocialTokenController extends Controller
         return view('student.token')->with('token', $token);
     }
 
-    private function generateToken(Request $request)
+    public function generateToken(Request $request)
     {
-        $user = $request->user;
+        $user = str_replace('-', '/', $request->user);
 
         $userExists = User::where('username', $user)->exists();
     
@@ -50,43 +53,52 @@ class SocialTokenController extends Controller
             $token = rand(1000, 9999);
         }
     
+        
+        $expiresAt = Carbon::now()->addMinutes(15);
         SocialToken::create([
             'user_id' => $user,
             'value' => $token,
+            'expires_at'=>$expiresAt,
         ]);
         
         $recipientEmail = User::where('username', $user)->first()->email;
-        $message='We have sent you this email because you
-        requested a token for verification of your social account. 
-        If you didn\'t send the request please skip this email, 
-        and make sure you change your SIMS account password';
+        $message='We have sent you this email because you requested a token for verification of your social account.If you didn\'t send the request please skip this email, and make sure you change your SIMS account password';
 
+        $token=((String)$token); 
         Mail::to($recipientEmail)
         ->send(new TokenGenerated($token, $message));
-    
+        
+     
         return response()->json([
-            'user'=>$user,
-            'message' => 'Token generated successfully. We have sent you the token 
-            in your email that you used to register in your College, Institute or University. 
-            Also, you can find it in your SIMS account.'
+            'message' => 'Token generated successfully.'
         ],200);
     }
 
-    public function verifyToken(Request $request)
-    {
-        $token = $request->input('token');
-        $user = $request->input('user');
-        $socialToken = SocialToken::where('user_id',$user)->where('value', $token)->first();
-        if (!$socialToken) {
-            return response()->json(['error' => 'Invalid token'], 404);
-        }
-        
-        $socialToken->delete();
-        
-        return response()->json(['message' => 'Token verified successfully'],200);  
+
+
+public function verifyToken(Request $request)
+{
+    $token = $request->input('token');
+    $user = str_replace('-', '/', $request->user);
+    $socialToken = SocialToken::where('user_id', $user)->where('value', $token)->first();
+    
+    if (!$socialToken) {
+        return response()->json(['message' => 'Invalid token'], 404);
     }
+    
+    // Check if the token has expired
+    $expiresAt = $socialToken->expires_at;
+    if ($expiresAt && Carbon::now()->gt($expiresAt)) {
+        return response()->json(['message' => 'Token has expired'], 400);
+    }
+    $status=User::where('username',$user)->first()->role;
+    $socialToken->delete();
+    
+    return response()->json(['message' => 'Token verified successfully','status'=>$status], 200);  
+}
 
 
+ 
     
 }
 

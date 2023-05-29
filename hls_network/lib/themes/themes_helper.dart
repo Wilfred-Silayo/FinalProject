@@ -41,6 +41,11 @@ class Pallete {
     drawerTheme: const DrawerThemeData(
       backgroundColor: appBarColor,
     ),
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: tealColor,
+      selectionColor: Colors.blue,
+      selectionHandleColor: Colors.blue,
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: tealColor,
     ),
@@ -73,6 +78,11 @@ class Pallete {
       background: Colors.grey[300]!,
       primary: Colors.grey[200]!,
       secondary: Colors.black,
+    ),
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: tealColor,
+      selectionColor: Colors.blue,
+      selectionHandleColor: Colors.blue,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: tealColor,

@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('social_tokens', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id')->index();
+            $table->string('user_id');
             $table->integer('value');
+            $table->dateTime('expires_at');
+            $table->foreign('user_id')->references('username')
+            ->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

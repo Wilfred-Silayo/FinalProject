@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hls_network/firebase_options.dart';
 import 'package:hls_network/features/home_screen.dart';
+import 'package:hls_network/firebase_options.dart';
 import 'package:hls_network/themes/themes_helper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth/login.dart';
 
-void main() async {
+   void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -36,7 +36,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.hasData) {
               return const HomeScreen();
-            } 
+            }
             //check if there is an error
             else if (snapshot.hasError) {
               return Center(

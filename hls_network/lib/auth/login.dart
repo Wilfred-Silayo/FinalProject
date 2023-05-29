@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hls_network/auth/welcome.dart';
 import 'package:hls_network/widgets/textfield.dart';
 import 'package:hls_network/widgets/button.dart';
-import 'package:hls_network/auth/register.dart';
 import 'package:hls_network/widgets/square_tile.dart';
 import 'package:hls_network/themes/themes_helper.dart';
 import '../controller/auth_method.dart';
@@ -52,12 +52,10 @@ class _LoginState extends ConsumerState<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     final currentTheme = ref.watch(themeNotifierProvider);
     return Scaffold(
       backgroundColor: currentTheme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -68,11 +66,9 @@ class _LoginState extends ConsumerState<Login> {
                 ),
                 const Text(
                   'Welcome back!',
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(
-                  height: 40,
-                ),
+                SizedBox(height: size.height / 9),
                 FormInputField(
                   textController: _emailController,
                   hintText: 'Email',
@@ -168,9 +164,7 @@ class _LoginState extends ConsumerState<Login> {
                     SquareTile(path: 'assets/google.png'),
                   ],
                 ),
-                const SizedBox(
-                  height: 40,
-                ),
+                SizedBox(height: size.height / 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -186,7 +180,7 @@ class _LoginState extends ConsumerState<Login> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Register()),
+                                builder: (context) => const Welcome()),
                           );
                         });
                       },

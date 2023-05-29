@@ -12,5 +12,6 @@ class SocialToken extends Model
         'id',
         'user_id',
         'value',
+        'expires_at',
     ]; 
 }

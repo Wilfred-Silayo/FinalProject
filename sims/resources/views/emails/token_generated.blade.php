@@ -17,24 +17,18 @@
 <body>
     <div>
         <h2>Token Generated</h2>
-        <p>{{ $message }}</p>
+        <p>{{ $emailMessage }}</p>
         <p>Here is your token:</p>
         <div class="token-container">
             {{ $token }}
         </div>
-        <button onclick="copyToClipboard('{{ $token }}')">Copy Token</button>
+        <p>
+            <strong>This token will expire after 15 minutes</strong> 
+        </p>
+        <p>
+            To copy the token, tap and hold on the token, then choose the copy option from the menu.
+            If the copy option is not available, you can manually select and copy the token.
+        </p>
     </div>
-
-    <script>
-        function copyToClipboard(text) {
-            const el = document.createElement('textarea');
-            el.value = text;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            alert('Token copied to clipboard!');
-        }
-    </script>
 </body>
 </html>

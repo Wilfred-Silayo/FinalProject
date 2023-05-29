@@ -36,9 +36,10 @@ class TokenGenerated extends Mailable
         return $this->subject('Token Generated')
                     ->view('emails.token_generated')
                     ->with([
-                        'message' => $this->message,
+                        'emailMessage' => $this->message,
                         'token'=>$this->token,
                     ]);
+     
     }
 }
 

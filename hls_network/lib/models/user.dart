@@ -6,8 +6,8 @@ class User {
   final String photoUrl;
   final String username;
   final String bio;
-  final String status;
-  final bool verified;
+  final String university;
+  final String verifiedAs;
   final List followers;
   final List following;
 
@@ -17,8 +17,8 @@ class User {
       required this.photoUrl,
       required this.email,
       required this.bio,
-      required this.status,
-      required this.verified,
+      required this.university,
+      required this.verifiedAs,
       required this.followers,
       required this.following});
 
@@ -31,11 +31,10 @@ class User {
       email: snapshot["email"],
       photoUrl: snapshot["photoUrl"],
       bio: snapshot["bio"],
-      status:snapshot["status"],
-      verified:snapshot["verified"],
+      university: snapshot["university"],
+      verifiedAs: snapshot["verifiedAs"],
       followers: snapshot["followers"],
       following: snapshot["following"],
-
     );
   }
 
@@ -45,8 +44,8 @@ class User {
         "email": email,
         "photoUrl": photoUrl,
         "bio": bio,
-        "status": status,
-        "verified": verified,
+        "university": university,
+        "verifiedAs": verifiedAs,
         "followers": followers,
         "following": following,
       };
