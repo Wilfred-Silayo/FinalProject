@@ -23,7 +23,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -47,30 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCdUJCQkZu0oiUFp2HtsRppq8TBmEgMr4c',
-    appId: '1:912898352075:web:91ece16a2141177ab44c4e',
-    messagingSenderId: '912898352075',
-    projectId: 'hlsnetworkbackend',
-    authDomain: 'hlsnetworkbackend.firebaseapp.com',
-    storageBucket: 'hlsnetworkbackend.appspot.com',
-    measurementId: 'G-8BP6MF0BVF',
+    apiKey: 'AIzaSyB3AyQjeg_S3Lnp2Xundq65D2dMgsz_9Tw',
+    appId: '1:230522659936:web:d1d048ded71c6c74574f05',
+    messagingSenderId: '230522659936',
+    projectId: 'hls-social',
+    authDomain: 'hls-social.firebaseapp.com',
+    storageBucket: 'hls-social.appspot.com',
+    measurementId: 'G-D7QS88H15R',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD-jny5U0bD3-TvcK4DVHyY8RArhfAlM_k',
-    appId: '1:912898352075:android:e1064583ac3e8960b44c4e',
-    messagingSenderId: '912898352075',
-    projectId: 'hlsnetworkbackend',
-    storageBucket: 'hlsnetworkbackend.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCQ7SUK6dC5MCebRw2qbT08npmX-5BQD3M',
-    appId: '1:912898352075:ios:5f60f91036b36d81b44c4e',
-    messagingSenderId: '912898352075',
-    projectId: 'hlsnetworkbackend',
-    storageBucket: 'hlsnetworkbackend.appspot.com',
-    iosClientId: '912898352075-bdmc5d8993s9svfv3t95fibobhgbegt8.apps.googleusercontent.com',
-    iosBundleId: 'com.example.hlsNetwork',
+    apiKey: 'AIzaSyCJzsRRBzLzNrXz9S54_g5FfjcEDiSshDE',
+    appId: '1:230522659936:android:7a99e9cd52e01adf574f05',
+    messagingSenderId: '230522659936',
+    projectId: 'hls-social',
+    storageBucket: 'hls-social.appspot.com',
   );
 }

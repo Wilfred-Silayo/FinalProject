@@ -1,41 +1,34 @@
 {
   "project_info": {
-    "project_number": "912898352075",
-    "project_id": "hlsnetworkbackend",
-    "storage_bucket": "hlsnetworkbackend.appspot.com"
+    "project_number": "230522659936",
+    "project_id": "hls-social",
+    "storage_bucket": "hls-social.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:912898352075:android:e1064583ac3e8960b44c4e",
+        "mobilesdk_app_id": "1:230522659936:android:7a99e9cd52e01adf574f05",
         "android_client_info": {
           "package_name": "com.example.hls_network"
         }
       },
       "oauth_client": [
         {
-          "client_id": "912898352075-4pe6ug48q86jcgug5u9m8lq3plkfjl5o.apps.googleusercontent.com",
+          "client_id": "230522659936-444o1vdig14oa6b2bcpjds74lbgqr7vn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD-jny5U0bD3-TvcK4DVHyY8RArhfAlM_k"
+          "current_key": "AIzaSyCJzsRRBzLzNrXz9S54_g5FfjcEDiSshDE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "912898352075-4pe6ug48q86jcgug5u9m8lq3plkfjl5o.apps.googleusercontent.com",
+              "client_id": "230522659936-444o1vdig14oa6b2bcpjds74lbgqr7vn.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "912898352075-bdmc5d8993s9svfv3t95fibobhgbegt8.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.hlsNetwork"
-              }
             }
           ]
         }

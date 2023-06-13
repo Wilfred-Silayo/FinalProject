@@ -1,8 +1,9 @@
-export 'package:hls_network/features/home_screen.dart';
-export 'package:hls_network/features/search.dart';
-export 'package:hls_network/features/groups.dart';
-export 'package:hls_network/features/direct_messages.dart';
-export 'package:hls_network/features/notifications.dart';
-export 'package:hls_network/features/conferences.dart';
-export 'package:hls_network/features/home.dart';
-export 'package:hls_network/features/profile.dart';
+export 'package:hls_network/features/home/views/home_screen.dart';
+export 'package:hls_network/features/search/views/search.dart';
+export 'package:hls_network/features/messages/direct_messages.dart';
+export 'package:hls_network/features/notifications/notifications.dart';
+export 'package:hls_network/features/conferences/views/conferences.dart';
+export 'package:hls_network/features/posts/views/posts.dart';
+export 'package:hls_network/features/profile/profile.dart';
+export 'package:hls_network/features/privacy/privacy.dart';
+export 'package:hls_network/features/security/security.dart';

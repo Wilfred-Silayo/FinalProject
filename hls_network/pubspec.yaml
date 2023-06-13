@@ -28,6 +28,12 @@ dependencies:
   flutter_riverpod: ^2.3.6
   image_picker: ^0.8.7+5
   cached_network_image: ^3.2.3
+  random_string: ^2.3.1
+  multiple_images_picker: ^1.0.1
+  carousel_slider: ^4.2.1
+  flutter_svg: ^2.0.5
+  uuid: ^3.0.7
+  fpdart: ^0.6.0
 
 
 flutter_icons:
