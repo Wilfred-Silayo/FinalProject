@@ -87,7 +87,7 @@ class _RegisterState extends ConsumerState<Register> {
                         hintText: 'Email',
                         obscureText: false,
                         prefixIcon: Icon(
-                          Icons.email,
+                           Icons.keyboard,
                           color: currentTheme.brightness == Brightness.dark
                               ? Colors.white
                               : Colors.black,

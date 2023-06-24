@@ -1,11 +1,13 @@
+import 'package:flutter/foundation.dart';
 
+@immutable
 class University {
   final String id;
   final String name;
   final String description;
   final String apiUrl;
-  University({
-    required this.id,
+  const University({
+    required this.id, 
     required this.name,
     required this.description,
     required this.apiUrl,

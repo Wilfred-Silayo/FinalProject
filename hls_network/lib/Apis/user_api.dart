@@ -6,7 +6,6 @@ import 'package:hls_network/providers/firebase_providers.dart';
 import 'package:hls_network/utils/failure.dart';
 import 'package:hls_network/utils/type_defs.dart';
 
-
 final userAPIProvider = Provider((ref) {
   return UserAPI(
     firestore: ref.watch(firebaseFirestoreProvider),
@@ -16,17 +15,17 @@ final userAPIProvider = Provider((ref) {
 abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
   Future<DocumentSnapshot> getUserData(String uid);
+  Future<DocumentSnapshot>  getUniversityData(String university);
   Future<List<DocumentSnapshot>> searchUserByName(String name);
   FutureEitherVoid updateUserData(UserModel userModel);
-  Stream<QuerySnapshot> getLatestUserProfileData();
+  Stream<UserModel> getLatestUserProfileData(String uid);
   FutureEitherVoid followUser(UserModel user);
   FutureEitherVoid addToFollowing(UserModel user);
 }
 
 class UserAPI implements IUserAPI {
   final FirebaseFirestore _firestore;
-  UserAPI({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+  UserAPI({required FirebaseFirestore firestore}) : _firestore = firestore;
 
   @override
   FutureEitherVoid saveUserData(UserModel userModel) async {
@@ -43,10 +42,12 @@ class UserAPI implements IUserAPI {
 
   @override
   Future<DocumentSnapshot> getUserData(String uid) {
-    return _firestore
-        .collection('users')
-        .doc(uid)
-        .get();
+    return _firestore.collection('users').doc(uid).get();
+  }
+
+ @override
+  Future<DocumentSnapshot> getUniversityData(String university) {
+    return _firestore.collection('universities').doc(university).get();
   }
 
   @override
@@ -72,12 +73,11 @@ class UserAPI implements IUserAPI {
     }
   }
 
- @override
-Stream<QuerySnapshot> getLatestUserProfileData() {
-  return _firestore
-      .collection('users')
-      .snapshots();
-}
+  @override
+  Stream<UserModel> getLatestUserProfileData(String uid) {
+    return _firestore.collection('users').doc(uid).snapshots().map(
+        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
+  }
 
 
   @override

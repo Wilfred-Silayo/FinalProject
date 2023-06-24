@@ -67,7 +67,7 @@ class _LoginState extends ConsumerState<Login> {
                         hintText: 'Email',
                         obscureText: false,
                         prefixIcon: Icon(
-                          Icons.email,
+                          Icons.keyboard,
                           color: currentTheme.brightness == Brightness.dark
                               ? Colors.white
                               : Colors.black,

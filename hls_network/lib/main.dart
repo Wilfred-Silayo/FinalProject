@@ -9,7 +9,7 @@ import 'package:hls_network/utils/error_page.dart';
 import 'package:hls_network/utils/loading_page.dart';
 import 'features/auth/views/login.dart';
   
-void main() async {
+void main() async { 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

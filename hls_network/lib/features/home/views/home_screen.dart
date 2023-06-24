@@ -21,37 +21,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     HomePage(),
     Search(),
     Conferences(),
-    Notifications(),
+    NotificationView(),
     DirectMessages(),
   ];
 
-  void _showOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: Icon(Icons.camera),
-                title: Text('Take a Photo'),
-                onTap: () {
-                  // Handle option selection
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.image),
-                title: Text('Choose from Gallery'),
-                onTap: () {
-                  // Handle option selection
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         elevation: 20.0,
-        onPressed: () => _showOptions(context),
+        onPressed: () => {},
         child: const Icon(
           Icons.add,
           color: Colors.white,

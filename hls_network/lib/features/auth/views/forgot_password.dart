@@ -77,7 +77,7 @@ class _PasswordResetState extends ConsumerState<PasswordReset> {
               controller: _emailController,
               decoration: InputDecoration(
                 prefixIcon: Icon(
-                  Icons.email,
+                  Icons.keyboard,
                   color: currentTheme.brightness == Brightness.dark
                       ? Colors.white
                       : Colors.black,

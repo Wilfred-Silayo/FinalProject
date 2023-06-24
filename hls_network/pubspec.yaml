@@ -34,6 +34,9 @@ dependencies:
   flutter_svg: ^2.0.5
   uuid: ^3.0.7
   fpdart: ^0.6.0
+  any_link_preview: ^3.0.0
+  timeago: ^3.4.0
+  like_button: ^2.0.5
 
 
 flutter_icons:

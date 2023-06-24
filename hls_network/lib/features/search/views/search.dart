@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hls_network/themes/themes_helper.dart';
 
 class Search extends StatefulWidget {
-  const Search({super.key});
+  const Search({Key? key}): super(key:key);
 
   @override
   State<Search> createState() => _SearchState();
