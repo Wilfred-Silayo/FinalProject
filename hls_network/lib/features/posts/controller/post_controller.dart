@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:hls_network/models/user_model.dart';
 import 'package:hls_network/utils/enums/notification_type.dart';
 import 'package:hls_network/utils/enums/post_type.dart';
 import 'package:hls_network/utils/utils.dart';
+import 'package:uuid/uuid.dart';
 
 final postControllerProvider = StateNotifierProvider<PostController, bool>(
   (ref) {
@@ -25,27 +25,22 @@ final postControllerProvider = StateNotifierProvider<PostController, bool>(
   },
 );
 
-final getPostsProvider = FutureProvider((ref) {
+final getPostsProvider = StreamProvider.family((ref, UserModel currentUser) {
   final postController = ref.watch(postControllerProvider.notifier);
-  return postController.getPosts();
+  return postController.getPosts(currentUser);
 });
 
-final getRepliesToPostsProvider = FutureProvider.family((ref, Post post) {
+final getRepliesToPostsProvider = StreamProvider.family((ref, Post post) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.getRepliesToPost(post);
 });
 
-final getLatestPostsProvider = StreamProvider((ref) {
-  final postAPI = ref.watch(postAPIProvider);
-  return postAPI.getLatestPost();
-});
-
-final getPostByIdProvider = FutureProvider.family((ref, String id) async {
+final getPostByIdProvider = StreamProvider.family((ref, String id) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.getPostById(id);
 });
 
-final getPostsByHashtagProvider = FutureProvider.family((ref, String hashtag) {
+final getPostsByHashtagProvider = StreamProvider.family((ref, String hashtag) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.getPostsByHashtag(hashtag);
 });
@@ -66,14 +61,13 @@ class PostController extends StateNotifier<bool> {
         _notificationController = notificationController,
         super(false);
 
-  Future<List<Post>> getPosts() async {
-    final postList = await _postAPI.getPosts();
-    return postList.map((post) => Post.fromMap(post.data() as Map<String,dynamic>)).toList();
+  Stream<List<Post>> getPosts(UserModel currentUser) {
+    return _postAPI.getPosts(currentUser);
   }
 
-  Future<Post> getPostById(String id) async {
-    final post = await _postAPI.getPostById(id);
-    return Post.fromMap(post.data() as Map<String,dynamic>);
+  Stream<Post> getPostById(String id) {
+   return  _postAPI.getPostById(id);
+    
   }
 
   void likePost(Post post, UserModel user) async {
@@ -102,7 +96,7 @@ class PostController extends StateNotifier<bool> {
     required String text,
     required BuildContext context,
     required String repliedTo,
-     required String repliedToUserId,
+    required String repliedToUserId,
   }) {
     if (text.isEmpty) {
       showSnackBar(context, 'Please enter text');
@@ -127,14 +121,18 @@ class PostController extends StateNotifier<bool> {
     }
   }
 
-  Future<List<Post>> getRepliesToPost(Post post) async {
-    final documents = await _postAPI.getRepliesToPost(post);
-    return documents.map((post) => Post.fromMap(post.data() as Map<String,dynamic>)).toList();
+  Stream<List<Post>> getRepliesToPost(Post post) {
+    return _postAPI.getRepliesToPost(post);
   }
 
-  Future<List<Post>> getPostsByHashtag(String hashtag) async {
-    final documents = await _postAPI.getPostsByHashtag(hashtag);
-    return documents.map((post) => Post.fromMap(post.data() as Map<String,dynamic>)).toList();
+  Stream<List<Post>> getPostsByHashtag(String hashtag) {
+    return _postAPI.getPostsByHashtag(hashtag);
+  }
+
+  void deletePost(Post post, BuildContext context) async {
+    final res = await _postAPI.deletePost(post);
+    res.fold((l) => null,
+        (r) => showSnackBar(context, 'Post Deleted successfully!'));
   }
 
   void _shareImagePost({
@@ -145,21 +143,21 @@ class PostController extends StateNotifier<bool> {
     required String repliedToUserId,
   }) async {
     state = true;
+    String postId = const Uuid().v1();
     final hashtags = _getHashtagsFromText(text);
     String link = _getLinkFromText(text);
     final user = _ref.read(currentUserDetailsProvider).value!;
-    final imageLinks = await _storageAPI.uploadImage('posts',images);
+    final imageLinks = await _storageAPI.uploadImage('posts', images);
     Post post = Post(
       text: text,
       hashtags: hashtags,
       link: link,
       imageLinks: imageLinks,
       uid: user.uid,
-     postType:PostType.image,
-     postedAt: DateTime.now(),
+      postType: PostType.image,
+      postedAt: DateTime.now(),
       likes: const [],
-      commentIds: const [],
-      id: '',
+      id: postId,
       repliedTo: repliedTo,
     );
     final res = await _postAPI.sharePost(post);
@@ -168,7 +166,7 @@ class PostController extends StateNotifier<bool> {
       if (repliedToUserId.isNotEmpty) {
         _notificationController.createNotification(
           text: '${user.fullName} replied to your post!',
-          postId: r.id,
+          postId: postId,
           notificationType: NotificationType.reply,
           uid: repliedToUserId,
         );
@@ -184,6 +182,7 @@ class PostController extends StateNotifier<bool> {
     required String repliedToUserId,
   }) async {
     state = true;
+    String postId = const Uuid().v1();
     final hashtags = _getHashtagsFromText(text);
     String link = _getLinkFromText(text);
     final user = _ref.read(currentUserDetailsProvider).value!;
@@ -196,8 +195,7 @@ class PostController extends StateNotifier<bool> {
       postType: PostType.text,
       postedAt: DateTime.now(),
       likes: const [],
-      commentIds: const [],
-      id: '',
+      id: postId,
       repliedTo: repliedTo,
     );
     final res = await _postAPI.sharePost(post);
@@ -205,7 +203,7 @@ class PostController extends StateNotifier<bool> {
       if (repliedToUserId.isNotEmpty) {
         _notificationController.createNotification(
           text: '${user.fullName} replied to your post!',
-          postId: r.id,
+          postId: postId,
           notificationType: NotificationType.reply,
           uid: repliedToUserId,
         );

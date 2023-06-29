@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:hls_network/features/posts/views/show_image.dart';
 
 class CarouselImage extends StatefulWidget {
   final List<String> imageLinks;
@@ -18,26 +19,28 @@ class _CarouselImageState extends State<CarouselImage> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.center,
       children: [
         Column(
           children: [
             CarouselSlider(
               items: widget.imageLinks.map(
                 (link) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    margin: const EdgeInsets.all(10),
+                  return GestureDetector(
+                    onTap: () {
+                    Navigator.push(
+                      context,
+                      ShowImage.route(link),
+                    );
+                  },
                     child: Image.network(
                       link,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
                     ),
                   );
                 },
               ).toList(),
               options: CarouselOptions(
+                height: 400,
                 viewportFraction: 1,
                 enableInfiniteScroll: false,
                 onPageChanged: (index, reason) {
@@ -47,12 +50,16 @@ class _CarouselImageState extends State<CarouselImage> {
                 },
               ),
             ),
+            const SizedBox(
+              height: 5,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: widget.imageLinks.asMap().entries.map((e) {
                 return Container(
                   width: 12,
                   height: 12,
+                  padding: const EdgeInsets.symmetric(vertical: 5),
                   margin: const EdgeInsets.symmetric(
                     horizontal: 4,
                   ),

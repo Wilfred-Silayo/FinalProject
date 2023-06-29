@@ -5,15 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hls_network/features/auth/controllers/auth_controller.dart';
-import 'package:hls_network/features/home/widgets/custom_circularAvator.dart';
+import 'package:hls_network/features/home/widgets/custom_circular_avator.dart';
 import 'package:hls_network/features/posts/controller/post_controller.dart';
 import 'package:hls_network/providers/theme_provider.dart';
 import 'package:hls_network/themes/themes_helper.dart';
-import 'package:hls_network/utils/RoundedSmallButton.dart';
+import 'package:hls_network/utils/rounded_small_button.dart';
 import 'package:hls_network/utils/loading_page.dart';
 import 'package:hls_network/utils/utils.dart';
 
 class CreatePost extends ConsumerStatefulWidget {
+  static route() {
+    return MaterialPageRoute(
+      builder: (context) => const CreatePost(),
+    );
+  }
+
   const CreatePost({super.key});
 
   @override

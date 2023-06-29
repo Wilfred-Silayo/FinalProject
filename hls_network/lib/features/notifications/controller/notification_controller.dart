@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hls_network/Apis/notification_api.dart';
-import 'package:hls_network/models/notification.dart'as model;
 import 'package:hls_network/utils/enums/notification_type.dart';
+import 'package:hls_network/models/notification.dart'as model;
+import 'package:uuid/uuid.dart';
 
 
 final notificationControllerProvider =
@@ -11,15 +12,9 @@ final notificationControllerProvider =
   );
 });
 
-final getLatestNotificationProvider = StreamProvider((ref) {
-  final notificationAPI = ref.watch(notificationAPIProvider);
-  return notificationAPI.getLatestNotification();
-});
-
-final getNotificationsProvider = FutureProvider.family((ref, String uid) async {
-  final notificationController =
-      ref.watch(notificationControllerProvider.notifier);
-  return notificationController.getNotifications(uid);
+final getNotificationProvider = StreamProvider.family((ref, String uid) {
+  final notification = ref.watch(notificationControllerProvider.notifier);
+  return notification.getNotifications(uid);
 });
 
 
@@ -35,10 +30,12 @@ class NotificationController extends StateNotifier<bool> {
     required NotificationType notificationType,
     required String uid,
   }) async {
+     String id = const Uuid().v1();
     final notification = model.Notification(
       text: text,
       postId: postId,
-      id: '',
+      createdAt: DateTime.now(),
+      id: id,
       uid: uid,
       notificationType: notificationType,
     );
@@ -46,10 +43,13 @@ class NotificationController extends StateNotifier<bool> {
     res.fold((l) => null, (r) => null);
   }
 
-  Future<List<model.Notification>> getNotifications(String uid) async {
-    final notifications = await _notificationAPI.getNotifications(uid);
-    return notifications
-        .map((e) => model.Notification.fromMap(e.data() as Map<String,dynamic>))
-        .toList();
+  Stream<List<model.Notification>> getNotifications(String uid) {
+    return _notificationAPI.getNotifications(uid);
   }
+
+  void deleteNotification(String notificationId) async {
+  final res = await _notificationAPI.deleteNotification(notificationId);
+  res.fold((l) => null, (r) => null);
+}
+
 }

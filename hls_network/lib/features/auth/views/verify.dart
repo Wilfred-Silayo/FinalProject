@@ -49,7 +49,6 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       final response = await SimsApi(baseUrl: widget.apiUrl)
           .generateToken(regNoController.text);
       if (response.statusCode == 200) {
-        final message = responseMessage(response);
         Navigator.push(
           context,
           MaterialPageRoute(

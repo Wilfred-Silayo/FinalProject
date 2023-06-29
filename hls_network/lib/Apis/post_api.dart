@@ -1,10 +1,12 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:hls_network/models/post.dart';
+import 'package:hls_network/models/user_model.dart';
 import 'package:hls_network/utils/failure.dart';
 import 'package:hls_network/utils/type_defs.dart';
-
 
 final postAPIProvider = Provider((ref) {
   return PostAPI(
@@ -13,107 +15,156 @@ final postAPIProvider = Provider((ref) {
 });
 
 abstract class IPostAPI {
-  FutureEither<DocumentSnapshot> sharePost(Post post);
-  Future<List<DocumentSnapshot>> getPosts();
-  Stream<QuerySnapshot> getLatestPost();
-  FutureEither<DocumentSnapshot> likePost(Post post);
-  Future<List<DocumentSnapshot>> getRepliesToPost(Post post);
-  Future<DocumentSnapshot> getPostById(String id);
-  Future<List<DocumentSnapshot>> getUserPosts(String uid);
-  Future<List<DocumentSnapshot>> getPostsByHashtag(String hashtag);
+  FutureEitherVoid sharePost(Post post);
+  FutureEitherVoid deletePost(Post post);
+  Stream<List<Post>> getPosts(UserModel currentUser);
+  FutureEitherVoid likePost(Post post);
+  Stream<List<Post>> getRepliesToPost(Post post);
+  Stream<Post> getPostById(String id);
+  Stream<List<Post>> getUserPosts(String uid);
+  Stream<List<Post>> getPostsByHashtag(String hashtag);
 }
 
 class PostAPI implements IPostAPI {
   final FirebaseFirestore _firestore;
-  
-  PostAPI({required FirebaseFirestore firestore})
-      : _firestore = firestore
-;
 
-@override
-FutureEither<DocumentSnapshot> sharePost(Post post) async {
-  try {
-    final collectionReference = _firestore.collection('posts');
-    final documentReference = await collectionReference.add(post.toMap());
-    final documentSnapshot = await documentReference.get();
-    return right(documentSnapshot);
-  } on FirebaseException catch (e, st) {
-    return left(
-      Failure(
-        e.message ?? 'Some unexpected error occurred',
-        st,
-      ),
-    );
-  } catch (e, st) {
-    return left(Failure(e.toString(), st));
-  }
-}
-
-
-
+  PostAPI({required FirebaseFirestore firestore}) : _firestore = firestore;
 
   @override
-  Future<List<DocumentSnapshot>> getPosts() async {
-    final snapshots = await _firestore
+  FutureEitherVoid sharePost(Post post) async {
+    try {
+      await _firestore.collection('posts').doc(post.id).set(post.toMap());
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(
+        Failure(
+          e.message ?? 'Some unexpected error occurred',
+          st,
+        ),
+      );
+    } catch (e, st) {
+      return left(Failure(e.toString(), st));
+    }
+  }
+
+  @override
+  FutureEitherVoid deletePost(Post post) async {
+    try {
+      await _firestore.collection('posts').doc(post.id).delete();
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(
+        Failure(
+          e.message ?? 'Some unexpected error occurred',
+          st,
+        ),
+      );
+    } catch (e, st) {
+      return left(Failure(e.toString(), st));
+    }
+  }
+
+  @override
+  Stream<List<Post>> getPosts(UserModel currentUser) {
+    List<String> followingUserIds = currentUser.following;
+
+    followingUserIds.add(currentUser.uid);
+
+    return _firestore
         .collection('posts')
+        .where('uid', whereIn: followingUserIds)
         .orderBy('postedAt', descending: true)
-        .get();
-    return snapshots.docs;
+        .limit(10)
+        .snapshots()
+        .map((event) => event.docs
+            .map(
+              (e) => Post.fromMap(
+                e.data(),
+              ),
+            )
+            .toList());
   }
 
   @override
-  Stream<QuerySnapshot> getLatestPost() {
-    return _firestore.collection('posts').snapshots();
+  FutureEitherVoid likePost(Post post) async {
+    try {
+      await _firestore
+          .collection('posts')
+          .doc(post.id)
+          .update({'likes': post.likes});
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(
+        Failure(
+          e.message ?? 'Some unexpected error occurred',
+          st,
+        ),
+      );
+    } catch (e, st) {
+      return left(Failure(e.toString(), st));
+    }
   }
-
-@override
-FutureEither<DocumentSnapshot> likePost(Post post) async {
-  try {
-    final collectionReference = _firestore.collection('posts');
-    await collectionReference.doc(post.id).update({'likes': post.likes});
-    final updatedDocument = await collectionReference.doc(post.id).get();
-    return right(updatedDocument);
-  } on FirebaseException catch (e, st) {
-    return left(
-      Failure(
-        e.message ?? 'Some unexpected error occurred',
-        st,
-      ),
-    );
-  } catch (e, st) {
-    return left(Failure(e.toString(), st));
-  }
-}
 
   @override
-  Future<List<DocumentSnapshot>> getRepliesToPost(Post post) async {
-    final snapshots = await _firestore
+  Stream<List<Post>> getRepliesToPost(Post post) {
+    return _firestore
         .collection('posts')
         .where('repliedTo', isEqualTo: post.id)
-        .get();
-    return snapshots.docs;
+        .limit(10)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map(
+                (e) => Post.fromMap(
+                  e.data(),
+                ),
+              )
+              .toList(),
+        );
   }
 
   @override
-  Future<DocumentSnapshot> getPostById(String id) async {
-    return _firestore.collection('posts').doc(id).get();
-  }
-
-  @override
-  Future<List<DocumentSnapshot>> getUserPosts(String uid) async {
-    final snapshots = await _firestore
+  Stream<Post> getPostById(String id) {
+    return _firestore
         .collection('posts')
-        .where('uid', isEqualTo: uid).orderBy('postedAt', descending: true)
-        .get();
-    return snapshots.docs;
+        .doc(id)
+        .snapshots()
+        .map((event) => Post.fromMap(event.data() as Map<String, dynamic>));
   }
 
   @override
-  Future<List<DocumentSnapshot>> getPostsByHashtag(String hashtag) async {
-    final snapshots = await _firestore
+  Stream<List<Post>> getUserPosts(String uid) {
+    return _firestore
+        .collection('posts')
+        .where('uid', isEqualTo: uid)
+        .orderBy('postedAt', descending: true)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map(
+                (e) => Post.fromMap(
+                  e.data(),
+                ),
+              )
+              .toList(),
+        );
+  }
+
+  @override
+  Stream<List<Post>> getPostsByHashtag(String hashtag) {
+    return _firestore
         .collection('posts')
         .where('hashtags', arrayContains: hashtag)
-        .get();
-    return snapshots.docs;
+        .limit(10)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map(
+                (e) => Post.fromMap(
+                  e.data(),
+                ),
+              )
+              .toList(),
+        );
   }
 }

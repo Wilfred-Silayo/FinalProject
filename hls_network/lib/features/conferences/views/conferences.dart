@@ -11,7 +11,17 @@ class _ConferencesState extends State<Conferences> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Conferences'),
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.search,
+                size: 30,
+              ))
+        ],
+      ),
     );
   }
 }

@@ -31,7 +31,6 @@ class UserProfileView extends ConsumerWidget {
       body: ref.watch(getLatestUserProfileDataProvider(userModel.uid)).when(
         data: (data) {
           copyOfUser = data;
-
           return ref.watch(getUniversityProvider(copyOfUser.university)).when(
             data: (universityData) {
               university = University.fromMap(universityData.data() as Map<String,dynamic>);

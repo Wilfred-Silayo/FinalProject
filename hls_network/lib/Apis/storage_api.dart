@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hls_network/features/auth/controllers/auth_controller.dart';
+import 'package:uuid/uuid.dart';
 
 final storageAPIProvider = Provider((ref) {
   final storage = FirebaseStorage.instance;
@@ -10,16 +11,21 @@ final storageAPIProvider = Provider((ref) {
   return StorageAPI(storage: storage, user: currentUser);
 });
 
-
 class StorageAPI {
   final FirebaseStorage _storage;
   final User? _currentUser;
-  StorageAPI({required FirebaseStorage storage, User? user}) : _storage = storage, _currentUser=user;
+  StorageAPI({required FirebaseStorage storage, User? user})
+      : _storage = storage,
+        _currentUser = user;
 
-  Future<List<String>> uploadImage(String childName,List<File> files) async {
+  Future<List<String>> uploadImage(String childName, List<File> files) async {
     List<String> imageLinks = [];
     for (final file in files) {
-      final ref = _storage.ref().child(childName).child(_currentUser!.uid);
+      Reference ref = _storage.ref().child(childName).child(_currentUser!.uid);
+      if (childName == 'posts') {
+        String id = const Uuid().v1();
+        ref = ref.child(id);
+      }
       final uploadTask = ref.putFile(file);
       await uploadTask.whenComplete(() {});
       final downloadUrl = await ref.getDownloadURL();

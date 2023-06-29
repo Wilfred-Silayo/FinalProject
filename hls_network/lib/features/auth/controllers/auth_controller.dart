@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,20 +17,20 @@ final authControllerProvider =
   );
 });
 
-final currentUserDetailsProvider = FutureProvider((ref) {
+final currentUserDetailsProvider = StreamProvider((ref) {
   final currentUserId = ref.watch(currentUserAccountProvider).value!.uid;
-  final userDetails = ref.watch(userDetailsProvider(currentUserId));
-  return userDetails.value;
+  final authController = ref.watch(authControllerProvider.notifier);
+  return authController.getUserData(currentUserId);
 });
 
-final userDetailsProvider = FutureProvider.family((ref, String uid) {
+final userDetailsProvider = StreamProvider.family((ref, String uid) {
   final authController = ref.watch(authControllerProvider.notifier);
   return authController.getUserData(uid);
 });
 
-final currentUserAccountProvider = FutureProvider((ref) {
+final currentUserAccountProvider = StreamProvider((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
-  return authController.currentUser();
+  return authController.authStateChange;
 });
 
 class AuthController extends StateNotifier<bool> {
@@ -45,7 +44,7 @@ class AuthController extends StateNotifier<bool> {
         super(false);
   // state = isLoading
 
-  Future<User?> currentUser() => _authAPI.currentUserAccount();
+  Stream<User?> get authStateChange => _authAPI.authStateChange;
 
   void signUp({
     required String email,
@@ -64,11 +63,11 @@ class AuthController extends StateNotifier<bool> {
     res.fold(
       (l) => showSnackBar(context, l.message),
       (r) async {
-         String username = await generateUniqueUsername();
+        String username = await generateUniqueUsername();
         UserModel userModel = UserModel(
           email: email,
           username: username,
-          fullName:fullName,
+          fullName: fullName,
           followers: const [],
           following: const [],
           profilePic: '',
@@ -77,7 +76,6 @@ class AuthController extends StateNotifier<bool> {
           bio: '',
           university: uniId,
           verifiedAs: verifiedAs,
-         
         );
         final res2 = await _userAPI.saveUserData(userModel);
         res2.fold((l) => showSnackBar(context, l.message), (r) {
@@ -102,32 +100,68 @@ class AuthController extends StateNotifier<bool> {
       password: password,
     );
     state = false;
-    res.fold(
-      (l) => showSnackBar(context, l.message),
-      (r) {
-        Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false);
-        });
+    res.fold((l) => showSnackBar(context, l.message), (r) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false);
+    });
   }
 
- Future<UserModel> getUserData(String uid) async {
-  final document = await _userAPI.getUserData(uid);
-  final updatedUser = UserModel.fromMap(document.data() as Map<String, dynamic>);
-  return updatedUser;
-}
+  Stream<UserModel> getUserData(String uid) {
+    return _userAPI.getUserData(uid);
+  }
 
   void logout(BuildContext context) async {
     final res = await _authAPI.logout();
     res.fold((l) => null, (r) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context)=>const Login()),
+        MaterialPageRoute(builder: (context) => const Login()),
         (route) => false,
       );
     });
   }
+
+  void deleteAccount(BuildContext context) async {
+    final res = await _authAPI.deleteAccount();
+    res.fold((l) => null, (r) {
+      showSnackBar(context, 'Account Deleted successfully');
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const Login()),
+        (route) => false,
+      );
+    });
+  }
+
+  void changePassword(
+    BuildContext context, String password
+  ) async {
+    final res = await _authAPI.changePassword(password);
+    res.fold((l) => null, (r) {
+      showSnackBar(context, 'Password changed successfully');
+    });
+  }
+
+  void verifyEmail(
+    BuildContext context,
+  ) async {
+    final res = await _authAPI.sendEmailVerification();
+    res.fold((l) => null, (r) {
+      showSnackBar(context, 'Verification email sent successfully. Please check your inbox');
+    });
+  }
+
+    void changeEmail(
+    BuildContext context, String newEmail
+  ) async {
+    final res = await _authAPI.changeEmail(newEmail);
+    res.fold((l) => null, (r) {
+      showSnackBar(context, 'Email changed successfully');
+    });
+  }
+
   Future<String> generateUniqueUsername() async {
     String username = '';
     bool isUnique = false;
@@ -137,12 +171,9 @@ class AuthController extends StateNotifier<bool> {
 
       username = 'user_$randomString';
 
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(username)
-          .get();
-
-      if (!snapshot.exists) {
+      bool value =
+          await _userAPI.checkUsernameAvailabilityStream(username).first;
+      if (value == true) {
         isUnique = true;
       }
     }

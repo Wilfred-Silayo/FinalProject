@@ -7,9 +7,10 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Brightness currentThemeBrightness;
 
   const StaticAppBar({
+    super.key,
     required this.lightImagePath,
     required this.darkImagePath,
-    required this.currentThemeBrightness,
+    required this.currentThemeBrightness
   });
 
   @override
@@ -22,17 +23,6 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: currentThemeBrightness == Brightness.light
           ? MyAppIcon(path: lightImagePath)
           : MyAppLogo(path: darkImagePath),
-      leading: Builder(builder: (context) {
-        return IconButton(
-          icon: const Icon(
-            Icons.menu,
-            size: 30,
-          ),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        );
-      }),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(50.0),
         child: Column(

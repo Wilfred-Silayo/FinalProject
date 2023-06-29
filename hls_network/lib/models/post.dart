@@ -12,7 +12,6 @@ class Post {
   final PostType postType;
   final DateTime postedAt;
   final List<String> likes;
-  final List<String> commentIds;
   final String id;
   final String repliedTo;
   const Post({
@@ -24,7 +23,6 @@ class Post {
     required this.postType,
     required this.postedAt,
     required this.likes,
-    required this.commentIds,
     required this.id,
     required this.repliedTo,
   });
@@ -38,7 +36,6 @@ class Post {
     PostType?  postType,
     DateTime? postedAt,
     List<String>? likes,
-    List<String>? commentIds,
     String? id,
     String? repliedTo,
   }) {
@@ -51,7 +48,6 @@ class Post {
       postType: postType ?? this.postType,
       postedAt: postedAt ?? this.postedAt,
       likes: likes ?? this.likes,
-      commentIds: commentIds ?? this.commentIds,
       id: id ?? this.id,
       repliedTo: repliedTo ?? this.repliedTo,
     );
@@ -65,10 +61,10 @@ class Post {
     result.addAll({'link': link});
     result.addAll({'imageLinks': imageLinks});
     result.addAll({'uid': uid});
+    result.addAll({'id': id});
     result.addAll({'postType': postType.type});
     result.addAll({'postedAt': postedAt.millisecondsSinceEpoch});
     result.addAll({'likes': likes});
-    result.addAll({'commentIds': commentIds});
     result.addAll({'repliedTo': repliedTo});
 
     return result;
@@ -84,7 +80,6 @@ class Post {
       postType: (map['postType'] as String).toPostTypeEnum(),
       postedAt: DateTime.fromMillisecondsSinceEpoch(map['postedAt']),
       likes: List<String>.from(map['likes']),
-      commentIds: List<String>.from(map['commentIds']),
       id: map['id'] ?? '',
       repliedTo: map['repliedTo'] ?? '',
     );
@@ -92,7 +87,7 @@ class Post {
 
   @override
   String toString() {
-    return 'Post(text: $text, hashtags: $hashtags, link: $link, imageLinks: $imageLinks, uid: $uid, postType: $postType, postedAt: $postedAt, likes: $likes, commentIds: $commentIds, id: $id, repliedTo: $repliedTo)';
+    return 'Post(text: $text, hashtags: $hashtags, link: $link, imageLinks: $imageLinks, uid: $uid, postType: $postType, postedAt: $postedAt, likes: $likes,id: $id, repliedTo: $repliedTo)';
   }
 
   @override
@@ -108,7 +103,6 @@ class Post {
         other.postType == postType &&
         other.postedAt == postedAt &&
         listEquals(other.likes, likes) &&
-        listEquals(other.commentIds, commentIds) &&
         other.id == id &&
         other.repliedTo == repliedTo;
   }
@@ -123,7 +117,6 @@ class Post {
         postType.hashCode ^
         postedAt.hashCode ^
         likes.hashCode ^
-        commentIds.hashCode ^
         id.hashCode ^
         repliedTo.hashCode;
   }

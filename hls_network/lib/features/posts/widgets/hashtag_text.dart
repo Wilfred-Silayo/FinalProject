@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hls_network/features/posts/views/hashtag_view.dart';
+import 'package:hls_network/providers/theme_provider.dart';
 
-class HashtagText extends StatelessWidget {
+class HashtagText extends ConsumerWidget {
   final String text;
   const HashtagText({
     super.key,
@@ -10,7 +12,9 @@ class HashtagText extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentTheme = ref.watch(themeNotifierProvider);
+
     List<TextSpan> textspans = [];
 
     text.split(' ').forEach((element) {
@@ -32,7 +36,8 @@ class HashtagText extends StatelessWidget {
               },
           ),
         );
-      } else if (element.startsWith('www.') || element.startsWith('https://')) {
+      }
+      else if (element.startsWith('www.') || element.startsWith('https://')) {
         textspans.add(
           TextSpan(
             text: '$element ',
@@ -46,8 +51,11 @@ class HashtagText extends StatelessWidget {
         textspans.add(
           TextSpan(
             text: '$element ',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
+              color: currentTheme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
             ),
           ),
         );

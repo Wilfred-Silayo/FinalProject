@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hls_network/features/posts/views/create_post.dart';
 import 'package:hls_network/features/posts/widgets/appbar.dart';
+import 'package:hls_network/features/posts/widgets/posts_list.dart';
 import 'package:hls_network/providers/theme_provider.dart';
 import 'package:hls_network/features/home/widgets/drawer.dart';
 import 'package:hls_network/themes/themes_helper.dart';
@@ -8,23 +10,65 @@ import 'package:hls_network/features/screens.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _page = 0;
+  int page = 0;
 
-  static const List<Widget> _pages = [
-    HomePage(),
+  static const List<Widget> pages = [
+    PostList(),
     Search(),
     Conferences(),
     NotificationView(),
     DirectMessages(),
   ];
 
+  void showOptions() {
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+      ),
+      context: context,
+      backgroundColor: ref.read(themeNotifierProvider).colorScheme.primary,
+      builder: (context) => SizedBox(
+        height: 400,
+        child: ListView(
+          children: [
+            const SizedBox(height:5),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('New post'),
+              onTap: () {
+                Navigator.push(context, CreatePost.route());
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.message_outlined),
+              title: const Text('New Chat'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.keyboard_voice),
+              title: const Text('New audio conference'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.video_call),
+              title: const Text('New video conference'),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,21 +76,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       extendBody: true,
-      appBar: _page == 0
+      appBar: page == 0
           ? StaticAppBar(
               lightImagePath: "assets/appicon.png",
               darkImagePath: "assets/logo.png",
               currentThemeBrightness: currentTheme.brightness,
             )
           : null,
-      drawer: _page == 0 ? const DrawerWidget() : null,
+      drawer: page == 0 ? const DrawerWidget() : null,
       body: IndexedStack(
-        index: _page,
-        children: _pages,
+        index: page,
+        children: pages,
       ),
       floatingActionButton: FloatingActionButton(
         elevation: 20.0,
-        onPressed: () => {},
+        onPressed: showOptions,
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -67,7 +111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           color: currentTheme.brightness == Brightness.light
               ? Pallete.tealColor
               : Pallete.appBarColor,
-          index: _page,
+          index: page,
           items: const <Widget>[
             Icon(Icons.home, size: 25),
             Icon(Icons.search, size: 25),
@@ -77,7 +121,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
           onTap: (index) {
             setState(() {
-              _page = index;
+              page = index;
             });
           },
         ),

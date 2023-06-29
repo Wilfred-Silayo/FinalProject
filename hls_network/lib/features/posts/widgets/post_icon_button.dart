@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:hls_network/themes/themes_helper.dart';
 
 class PostIconButton extends StatelessWidget {
-  final String pathName;
   final String text;
   final VoidCallback onTap;
   const PostIconButton({
     Key? key,
-    required this.pathName,
     required this.text,
     required this.onTap,
   }) : super(key: key);
@@ -19,10 +15,7 @@ class PostIconButton extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          SvgPicture.asset(
-            pathName,
-            color: Pallete.greyColor,
-          ),
+          const Icon(Icons.comment),
           Container(
             margin: const EdgeInsets.all(6),
             child: Text(

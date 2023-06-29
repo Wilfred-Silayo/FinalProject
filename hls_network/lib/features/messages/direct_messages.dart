@@ -12,6 +12,15 @@ class _DirectMessagesState extends State<DirectMessages> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Messages'),
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.search,
+                size: 30,
+              ))
+        ],
       ),
     );
   }

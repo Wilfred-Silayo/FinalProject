@@ -20,20 +20,27 @@ final userProfileControllerProvider =
   );
 });
 
-final getUserPostsProvider = FutureProvider.family((ref, String uid) async {
+final getUserPostsProvider = StreamProvider.family((ref, String uid){
   final userProfileController =
       ref.watch(userProfileControllerProvider.notifier);
   return userProfileController.getUserPosts(uid);
 });
 
-final getLatestUserProfileDataProvider = StreamProvider.family((ref, String uid){
+final getLatestUserProfileDataProvider =
+    StreamProvider.family((ref, String uid) {
   final userAPI = ref.watch(userAPIProvider);
   return userAPI.getLatestUserProfileData(uid);
 });
 
-final getUniversityProvider = FutureProvider.family((ref, String university){
+final getUniversityProvider = FutureProvider.family((ref, String university) {
   final userAPI = ref.watch(userAPIProvider);
   return userAPI.getUniversityData(university);
+});
+
+final usernameAvailabilityProvider =
+    StreamProvider.family<bool, String>((ref, username) {
+  final userAPI = ref.watch(userAPIProvider);
+  return userAPI.checkUsernameAvailabilityStream(username);
 });
 
 class UserProfileController extends StateNotifier<bool> {
@@ -52,9 +59,8 @@ class UserProfileController extends StateNotifier<bool> {
         _notificationController = notificationController,
         super(false);
 
-  Future<List<Post>> getUserPosts(String uid) async {
-    final posts = await _postAPI.getUserPosts(uid);
-    return posts.map((e) => Post.fromMap(e.data() as Map<String,dynamic>)).toList();
+  Stream<List<Post>> getUserPosts(String uid) {
+    return _postAPI.getUserPosts(uid);
   }
 
   void updateUserProfile({
@@ -64,21 +70,25 @@ class UserProfileController extends StateNotifier<bool> {
     required File? profileFile,
   }) async {
     state = true;
+
+    UserModel updatedUserModel = userModel;
+
     if (bannerFile != null) {
-      final bannerUrl = await _storageAPI.uploadImage('profile',[bannerFile]);
-      userModel = userModel.copyWith(
+      final bannerUrl = await _storageAPI.uploadImage('banner', [bannerFile]);
+      updatedUserModel = updatedUserModel.copyWith(
         bannerPic: bannerUrl[0],
       );
     }
 
     if (profileFile != null) {
-      final profileUrl = await _storageAPI.uploadImage('profile',[profileFile]);
-      userModel = userModel.copyWith(
+      final profileUrl =
+          await _storageAPI.uploadImage('profile', [profileFile]);
+      updatedUserModel = updatedUserModel.copyWith(
         profilePic: profileUrl[0],
       );
     }
 
-    final res = await _userAPI.updateUserData(userModel);
+    final res = await _userAPI.updateUserData(updatedUserModel);
     state = false;
     res.fold(
       (l) => showSnackBar(context, l.message),

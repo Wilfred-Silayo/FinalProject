@@ -14,13 +14,14 @@ final userAPIProvider = Provider((ref) {
 
 abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
-  Future<DocumentSnapshot> getUserData(String uid);
-  Future<DocumentSnapshot>  getUniversityData(String university);
-  Future<List<DocumentSnapshot>> searchUserByName(String name);
+  Stream<UserModel> getUserData(String uid);
+  Future<DocumentSnapshot> getUniversityData(String university);
+  Stream<List<UserModel>> searchUserByName(String query);
   FutureEitherVoid updateUserData(UserModel userModel);
   Stream<UserModel> getLatestUserProfileData(String uid);
   FutureEitherVoid followUser(UserModel user);
   FutureEitherVoid addToFollowing(UserModel user);
+  Stream<bool> checkUsernameAvailabilityStream(String username);
 }
 
 class UserAPI implements IUserAPI {
@@ -41,23 +42,39 @@ class UserAPI implements IUserAPI {
   }
 
   @override
-  Future<DocumentSnapshot> getUserData(String uid) {
-    return _firestore.collection('users').doc(uid).get();
+  Stream<UserModel> getUserData(String uid) {
+    return _firestore.collection('users').doc(uid).snapshots().map(
+        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
 
- @override
+  @override
   Future<DocumentSnapshot> getUniversityData(String university) {
     return _firestore.collection('universities').doc(university).get();
   }
 
-  @override
-  Future<List<DocumentSnapshot>> searchUserByName(String name) async {
-    final querySnapshot = await _firestore
-        .collection('users')
-        .where('name', isEqualTo: name)
-        .get();
 
-    return querySnapshot.docs;
+  @override
+  Stream<List<UserModel>> searchUserByName(String query) {
+    return _firestore
+        .collection('users')
+        .where(
+          'username',
+          isGreaterThanOrEqualTo: query.isEmpty ? 0 : query,
+          isLessThan: query.isEmpty
+              ? null
+              : query.substring(0, query.length - 1) +
+                  String.fromCharCode(
+                    query.codeUnitAt(query.length - 1) + 1,
+                  ),
+        )
+        .snapshots()
+        .map((event) {
+      List<UserModel> users = [];
+      for (var user in event.docs) {
+        users.add(UserModel.fromMap(user.data()));
+      }
+      return users;
+    });
   }
 
   @override
@@ -79,6 +96,17 @@ class UserAPI implements IUserAPI {
         (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
 
+  @override
+  Stream<bool> checkUsernameAvailabilityStream(String username) {
+    Stream<QuerySnapshot> querySnapshotStream = FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .snapshots();
+
+    return querySnapshotStream
+        .map((querySnapshot) => querySnapshot.docs.isEmpty);
+  }
 
   @override
   FutureEitherVoid followUser(UserModel user) async {
