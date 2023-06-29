@@ -74,7 +74,7 @@ class PostAPI implements IPostAPI {
         .collection('posts')
         .where('uid', whereIn: followingUserIds)
         .orderBy('postedAt', descending: true)
-        .limit(10)
+        .limit(50)
         .snapshots()
         .map((event) => event.docs
             .map(
