@@ -20,38 +20,6 @@ class _DrawerWidgetState extends ConsumerState<DrawerWidget> {
     ref.read(themeNotifierProvider.notifier).toggleTheme();
   }
 
-  void showOptions() {
-    showModalBottomSheet(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.0),
-          topRight: Radius.circular(20.0),
-        ),
-      ),
-      context: context,
-      backgroundColor: ref.read(themeNotifierProvider).colorScheme.primary,
-      builder: (context) => SizedBox(
-        height: 100,
-        child: ListView(
-          children: [
-            ListTile(
-              leading: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-              title: const Text('Delete Account'),
-              onTap: () {
-                ref
-                    .read(authControllerProvider.notifier)
-                    .deleteAccount(context);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final currentTheme = ref.watch(themeNotifierProvider);
@@ -89,20 +57,6 @@ class _DrawerWidgetState extends ConsumerState<DrawerWidget> {
                       ),
                       const SizedBox(
                         height: 8,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Followers: ${user.followers.length}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            'Following: ${user.following.length}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -241,22 +195,6 @@ class _DrawerWidgetState extends ConsumerState<DrawerWidget> {
                   ),
                   onTap: () async {
                     ref.read(authControllerProvider.notifier).logout(context);
-                  },
-                ),
-                const Divider(
-                  thickness: 2.0,
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.delete_forever,
-                    color: Colors.red,
-                  ),
-                  title: const Text(
-                    "Delete Account",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  onTap: () {
-                    showOptions();
                   },
                 ),
               ],

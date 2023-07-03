@@ -68,14 +68,13 @@ class UserProfileController extends StateNotifier<bool> {
     required BuildContext context,
     required File? bannerFile,
     required File? profileFile,
+    required UserModel currentUser
   }) async {
     state = true;
 
-    UserModel updatedUserModel = userModel;
-
     if (bannerFile != null) {
       final bannerUrl = await _storageAPI.uploadImage('banner', [bannerFile]);
-      updatedUserModel = updatedUserModel.copyWith(
+       userModel = userModel.copyWith(
         bannerPic: bannerUrl[0],
       );
     }
@@ -83,12 +82,16 @@ class UserProfileController extends StateNotifier<bool> {
     if (profileFile != null) {
       final profileUrl =
           await _storageAPI.uploadImage('profile', [profileFile]);
-      updatedUserModel = updatedUserModel.copyWith(
+      userModel = userModel.copyWith(
         profilePic: profileUrl[0],
       );
     }
 
-    final res = await _userAPI.updateUserData(updatedUserModel);
+    if (userModel.following.contains(currentUser.uid)) {
+      userModel.following.remove(currentUser.uid);
+    } 
+
+    final res = await _userAPI.updateUserData(userModel);
     state = false;
     res.fold(
       (l) => showSnackBar(context, l.message),

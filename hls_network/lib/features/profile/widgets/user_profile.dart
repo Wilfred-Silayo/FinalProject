@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hls_network/features/auth/controllers/auth_controller.dart';
 import 'package:hls_network/features/home/widgets/custom_circular_avator.dart';
+import 'package:hls_network/features/messages/views/chat.dart';
 import 'package:hls_network/features/posts/widgets/post_card.dart';
 import 'package:hls_network/features/profile/controller/user_profile_controller.dart';
 import 'package:hls_network/features/profile/view/edit_profile.dart';
@@ -65,7 +66,10 @@ class UserProfile extends ConsumerWidget {
                           children: [
                             currentUser.uid != user.uid
                                 ? IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(context,
+                                          ChatScreen.route(user));
+                                    },
                                     icon: const Padding(
                                       padding: EdgeInsets.only(right: 16.0),
                                       child: Icon(
@@ -170,7 +174,7 @@ class UserProfile extends ConsumerWidget {
                             ),
                             const SizedBox(width: 15),
                             GestureDetector(
-                                onTap: () {
+                              onTap: () {
                                 Navigator.push(context, Followers.route(user));
                               },
                               child: FollowCount(

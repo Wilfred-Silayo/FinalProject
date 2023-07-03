@@ -27,8 +27,8 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   late TextEditingController fullNameController;
   File? bannerFile;
   File? profileFile;
-  bool? isUsernameAvailable = true;
-  bool? isInvalidUsername = false;
+  late bool isUsernameAvailable;
+  late bool isInvalidUsername;
 
   @override
   void initState() {
@@ -42,6 +42,8 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
     fullNameController = TextEditingController(
       text: ref.read(currentUserDetailsProvider).value?.fullName ?? '',
     );
+    isInvalidUsername = false;
+    isUsernameAvailable = true;
   }
 
   @override
@@ -79,7 +81,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
           return;
         });
       }
-      bool? availability = ref.read(usernameAvailabilityProvider(value)).value;
+      bool availability = ref.read(usernameAvailabilityProvider(value)).value!;
       String currentUsername =
           ref.read(currentUserDetailsProvider).value!.username;
       if (currentUsername == value) {
@@ -106,11 +108,7 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
         actions: [
           RoundedSmallButton(
             onTap: () {
-              final username = usernameController.text;
-              final fullName = fullNameController.text;
-
-              if (username.isNotEmpty &&
-                  fullName.isNotEmpty &&
+              if (
                   isUsernameAvailable == true &&
                   isInvalidUsername == false) {
                 return ref
@@ -124,10 +122,11 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
                       context: context,
                       bannerFile: bannerFile,
                       profileFile: profileFile,
+                      currentUser:user
                     );
               } else {
                 return showSnackBar(
-                    context, 'Username and Your Name cannot be empty.');
+                    context, 'Something went wrong.');
               }
             },
             label: 'save',
@@ -225,15 +224,16 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
                   const SizedBox(height: 20),
                   TextField(
                     controller: usernameController,
-                    onChanged: (value) => checkUsernameAvailability(value),
+                    onChanged: (value) {
+                      checkUsernameAvailability(value);
+                    },
                     maxLength: 13,
                     decoration: InputDecoration(
                       hintText: 'username',
                       contentPadding: const EdgeInsets.all(18),
                       errorText: isInvalidUsername == true
                           ? 'Invalid username. Only alphanumeric and underscore characters are allowed.'
-                          : isUsernameAvailable != null &&
-                                  isUsernameAvailable == false
+                          : isUsernameAvailable && isUsernameAvailable == false
                               ? 'Username is not available'
                               : null,
                     ),

@@ -6,7 +6,6 @@ import 'package:hls_network/features/posts/widgets/post_icon_button.dart';
 import 'package:hls_network/features/profile/controller/user_profile_controller.dart';
 import 'package:hls_network/models/user_model.dart';
 import 'package:hls_network/providers/theme_provider.dart';
-import 'package:hls_network/utils/loading_page.dart';
 import 'package:like_button/like_button.dart';
 import 'package:hls_network/features/auth/controllers/auth_controller.dart';
 import 'package:hls_network/features/posts/controller/post_controller.dart';
@@ -19,6 +18,7 @@ import 'package:hls_network/themes/themes_helper.dart';
 import 'package:hls_network/utils/enums/post_type.dart';
 import 'package:hls_network/utils/error_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:share_plus/share_plus.dart';
 
 class PostCard extends ConsumerStatefulWidget {
   final Post post;
@@ -29,6 +29,17 @@ class PostCard extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<PostCard> createState() => _PostCardState();
+}
+
+void sharePost(String postText, List<String> imageLinks) {
+  String text = postText;
+
+  if (imageLinks.isNotEmpty) {
+    text += "\n\nImage Links:\n";
+    text += imageLinks.join("\n");
+  }
+
+  Share.share(text);
 }
 
 class _PostCardState extends ConsumerState<PostCard> {
@@ -285,7 +296,10 @@ class _PostCardState extends ConsumerState<PostCard> {
                               },
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                sharePost(
+                                    widget.post.text, widget.post.imageLinks);
+                              },
                               icon: const Icon(
                                 Icons.share_outlined,
                                 size: 25,
@@ -301,227 +315,7 @@ class _PostCardState extends ConsumerState<PostCard> {
               error: (error, stackTrace) => ErrorText(
                 error: error.toString(),
               ),
-              loading: () => const Loader(),
+              loading: () => const SizedBox(),
             );
   }
 }
-
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final currentUser = ref.watch(currentUserDetailsProvider).value;
-
-//     return currentUser == null
-//         ? const SizedBox()
-//         : ref.watch(userDetailsProvider(post.uid)).when(
-//               data: (user) {
-//                 return GestureDetector(
-//                   onTap: () {
-//                     Navigator.push(
-//                       context,
-//                       PostReplyScreen.route(post),
-//                     );
-//                   },
-//                   child: Column(
-//                     children: [
-//                       Row(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Container(
-//                             margin: const EdgeInsets.all(10),
-//                             child: GestureDetector(
-//                               onTap: () {
-//                                 Navigator.push(
-//                                   context,
-//                                   UserProfileView.route(user),
-//                                 );
-//                               },
-//                               child: CustomCircularAvator(
-//                                 photoUrl: user.profilePic,
-//                                 radius: 30,
-//                               ),
-//                             ),
-//                           ),
-//                           Expanded(
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Row(
-//                                   children: [
-//                                     Container(
-//                                       margin: const EdgeInsets.only(
-//                                         right: 5,
-//                                       ),
-//                                       child: Row(
-//                                         children: [
-//                                           Text(
-//                                             user.fullName,
-//                                             overflow: TextOverflow.ellipsis,
-//                                             style: const TextStyle(
-//                                               fontWeight: FontWeight.bold,
-//                                               fontSize: 16,
-//                                             ),
-//                                           ),
-//                                           Text(
-//                                             '· ${timeago.format(
-//                                               post.postedAt,
-//                                               locale: 'en_short',
-//                                             )}',
-//                                             style: const TextStyle(
-//                                               fontSize: 16,
-//                                             ),
-//                                           ),
-//                                         ],
-//                                       ),
-//                                     ),
-//                                     Row(
-//                                       children: [
-//                                         Text(
-//                                           '@${user.username}',
-//                                           overflow: TextOverflow.ellipsis,
-//                                           style: const TextStyle(
-//                                             fontWeight: FontWeight.bold,
-//                                             fontSize: 16,
-//                                           ),
-//                                         ),
-//                                       ],
-//                                     )
-//                                   ],
-//                                 ),
-//                                 if (post.repliedTo.isNotEmpty)
-//                                   ref
-//                                       .watch(
-//                                           getPostByIdProvider(post.repliedTo))
-//                                       .when(
-//                                         data: (repliedToPost) {
-//                                           final replyingToUser = ref
-//                                               .watch(
-//                                                 userDetailsProvider(
-//                                                   repliedToPost.uid,
-//                                                 ),
-//                                               )
-//                                               .value;
-//                                           return RichText(
-//                                             text: TextSpan(
-//                                               text: 'Replying to',
-//                                               style: const TextStyle(
-//                                                 fontSize: 16,
-//                                               ),
-//                                               children: [
-//                                                 TextSpan(
-//                                                   text:
-//                                                       ' @${replyingToUser?.username}',
-//                                                   style: const TextStyle(
-//                                                     color: Colors.blue,
-//                                                     fontSize: 16,
-//                                                   ),
-//                                                 ),
-//                                               ],
-//                                             ),
-//                                           );
-//                                         },
-//                                         error: (error, st) => ErrorText(
-//                                           error: error.toString(),
-//                                         ),
-//                                         loading: () => const SizedBox(),
-//                                       ),
-//                                 HashtagText(text: post.text),
-//                                 if (post.postType == PostType.image)
-//                                   CarouselImage(imageLinks: post.imageLinks),
-//                                 if (post.link.isNotEmpty) ...[
-//                                   const SizedBox(height: 4),
-//                                   AnyLinkPreview(
-//                                     displayDirection:
-//                                         UIDirection.uiDirectionHorizontal,
-//                                     link: 'https://${post.link}',
-//                                   ),
-//                                 ],
-//                                 Container(
-//                                   margin: const EdgeInsets.only(
-//                                     top: 10,
-//                                     right: 20,
-//                                   ),
-//                                   child: Row(
-//                                     mainAxisAlignment:
-//                                         MainAxisAlignment.spaceBetween,
-//                                     children: [
-//                                       PostIconButton(
-//                                         text: ref
-//                                             .watch(
-//                                                 getRepliesToPostsProvider(post))
-//                                             .maybeWhen(
-//                                               data: (posts) =>
-//                                                   posts.length.toString(),
-//                                               orElse: () => '',
-//                                             ),
-//                                         onTap: () {},
-//                                       ),
-//                                       LikeButton(
-//                                         size: 25,
-//                                         onTap: (isLiked) async {
-//                                           ref
-//                                               .read(postControllerProvider
-//                                                   .notifier)
-//                                               .likePost(
-//                                                 post,
-//                                                 currentUser,
-//                                               );
-//                                           return !isLiked;
-//                                         },
-//                                         isLiked: post.likes
-//                                             .contains(currentUser.uid),
-//                                         likeBuilder: (isLiked) {
-//                                           return isLiked
-//                                               ? const Icon(
-//                                                   Icons.favorite,
-//                                                   color: Colors.red,
-//                                                 )
-//                                               : const Icon(Icons
-//                                                   .favorite_border_outlined);
-//                                         },
-//                                         likeCount: post.likes.length,
-//                                         countBuilder:
-//                                             (likeCount, isLiked, text) {
-//                                           return Padding(
-//                                             padding: const EdgeInsets.only(
-//                                                 left: 2.0),
-//                                             child: Text(
-//                                               text,
-//                                               style: TextStyle(
-//                                                 color: isLiked
-//                                                     ? Pallete.redColor
-//                                                     : Pallete.whiteColor,
-//                                                 fontSize: 16,
-//                                               ),
-//                                             ),
-//                                           );
-//                                         },
-//                                       ),
-//                                       IconButton(
-//                                         onPressed: () {},
-//                                         icon: const Icon(
-//                                           Icons.share_outlined,
-//                                           size: 25,
-//                                         ),
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                                 const SizedBox(height: 1),
-//                               ],
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                       const Divider(color: Pallete.greyColor),
-//                     ],
-//                   ),
-//                 );
-//               },
-//               error: (error, stackTrace) => ErrorText(
-//                 error: error.toString(),
-//               ),
-//               loading: () => const Loader(),
-//             );
-//   }
-// }

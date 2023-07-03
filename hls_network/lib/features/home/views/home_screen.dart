@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hls_network/features/messages/views/search_user.dart';
 import 'package:hls_network/features/posts/views/create_post.dart';
 import 'package:hls_network/features/posts/widgets/appbar.dart';
 import 'package:hls_network/features/posts/widgets/posts_list.dart';
@@ -41,7 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         height: 400,
         child: ListView(
           children: [
-            const SizedBox(height:5),
+            const SizedBox(height: 5),
             ListTile(
               leading: const Icon(Icons.edit),
               title: const Text('New post'),
@@ -52,7 +53,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.message_outlined),
               title: const Text('New Chat'),
-              onTap: () {},
+              onTap: () {Navigator.push(context, SearchUser.route());},
             ),
             ListTile(
               leading: const Icon(Icons.keyboard_voice),
@@ -68,6 +69,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
     );
+    
   }
 
   @override

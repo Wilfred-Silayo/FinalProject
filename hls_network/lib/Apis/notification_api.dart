@@ -67,7 +67,6 @@ class NotificationAPI implements INotificationAPI {
         .collection('notifications')
         .where('uid', isEqualTo: uid)
         .orderBy('createdAt', descending: true)
-        .limit(10)
         .snapshots()
         .map(
           (event) => event.docs

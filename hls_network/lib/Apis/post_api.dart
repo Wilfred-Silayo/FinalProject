@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,7 +73,6 @@ class PostAPI implements IPostAPI {
         .collection('posts')
         .where('uid', whereIn: followingUserIds)
         .orderBy('postedAt', descending: true)
-        .limit(50)
         .snapshots()
         .map((event) => event.docs
             .map(
@@ -110,7 +108,6 @@ class PostAPI implements IPostAPI {
     return _firestore
         .collection('posts')
         .where('repliedTo', isEqualTo: post.id)
-        .limit(10)
         .snapshots()
         .map(
           (event) => event.docs
@@ -155,7 +152,6 @@ class PostAPI implements IPostAPI {
     return _firestore
         .collection('posts')
         .where('hashtags', arrayContains: hashtag)
-        .limit(10)
         .snapshots()
         .map(
           (event) => event.docs
