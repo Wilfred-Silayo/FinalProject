@@ -6,6 +6,7 @@ import 'package:hls_network/themes/themes_helper.dart';
 import 'package:hls_network/utils/enums/notification_type.dart';
 import 'package:hls_network/utils/error_page.dart';
 import 'package:hls_network/utils/loading_page.dart';
+import 'package:intl/intl.dart';
 
 class NotificationView extends ConsumerStatefulWidget {
   const NotificationView({Key? key}) : super(key: key);
@@ -79,6 +80,15 @@ class _NotificationViewState extends ConsumerState<NotificationView> {
                                       )
                                     : null,
                         title: Text(notification.text),
+                        trailing: isSelected
+                            ? const Icon(Icons.check)
+                            : Text(
+                                DateFormat.Hm().format(notification.createdAt),
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 13,
+                                ),
+                              ),
                         onLongPress: () {
                           setState(() {
                             if (isSelected) {

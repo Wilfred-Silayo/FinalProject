@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hls_network/features/posts/views/show_image.dart';
+import 'package:hls_network/providers/theme_provider.dart';
 
-class CarouselImage extends StatefulWidget {
+class CarouselImage extends ConsumerStatefulWidget {
   final List<String> imageLinks;
   const CarouselImage({
     super.key,
@@ -10,14 +12,15 @@ class CarouselImage extends StatefulWidget {
   });
 
   @override
-  State<CarouselImage> createState() => _CarouselImageState();
+  ConsumerState<CarouselImage> createState() => _CarouselImageState();
 }
 
-class _CarouselImageState extends State<CarouselImage> {
+class _CarouselImageState extends ConsumerState<CarouselImage> {
   int _current = 0;
 
   @override
   Widget build(BuildContext context) {
+    final currentTheme = ref.watch(themeNotifierProvider);
     return Stack(
       children: [
         Column(
@@ -27,11 +30,11 @@ class _CarouselImageState extends State<CarouselImage> {
                 (link) {
                   return GestureDetector(
                     onTap: () {
-                    Navigator.push(
-                      context,
-                      ShowImage.route(link),
-                    );
-                  },
+                      Navigator.push(
+                        context,
+                        ShowImage.route(link),
+                      );
+                    },
                     child: Image.network(
                       link,
                       fit: BoxFit.cover,
@@ -65,9 +68,13 @@ class _CarouselImageState extends State<CarouselImage> {
                   ),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(
-                      _current == e.key ? 0.9 : 0.4,
-                    ),
+                    color: currentTheme.brightness == Brightness.dark
+                        ? Colors.white.withOpacity(
+                            _current == e.key ? 0.9 : 0.4,
+                          )
+                        : Colors.black.withOpacity(
+                            _current == e.key ? 0.9 : 0.4,
+                          ),
                   ),
                 );
               }).toList(),

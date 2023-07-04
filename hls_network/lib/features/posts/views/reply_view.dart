@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hls_network/features/posts/controller/post_controller.dart';
 import 'package:hls_network/features/posts/widgets/post_card.dart';
 import 'package:hls_network/models/post.dart';
+import 'package:hls_network/providers/theme_provider.dart';
 import 'package:hls_network/themes/themes_helper.dart';
 import 'package:hls_network/utils/error_page.dart';
 import 'package:hls_network/utils/loading_page.dart';
@@ -27,6 +28,8 @@ class _PostReplyScreenState extends ConsumerState<PostReplyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentTheme = ref.watch(themeNotifierProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Post'),
@@ -53,6 +56,9 @@ class _PostReplyScreenState extends ConsumerState<PostReplyScreen> {
                     ),
                     loading: () => const Loader(),
                   ),
+              const SizedBox(
+                height: 6,
+              )
             ],
           ),
           Positioned(
@@ -67,27 +73,45 @@ class _PostReplyScreenState extends ConsumerState<PostReplyScreen> {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       child: TextField(
+                        style: const TextStyle(color: Colors.white),
                         controller: postTextController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: currentTheme.brightness == Brightness.dark
+                              ? Pallete.searchBarColor
+                              : Pallete.tealColor,
                           hintText: 'Reply',
+                          hintStyle: const TextStyle(color: Colors.white54),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                            borderSide: const BorderSide(
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.all(10),
                         ),
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.send, color: Pallete.tealColor),
-                    onPressed: () {
-                      ref.read(postControllerProvider.notifier).sharePost(
-                        images: [],
-                        text: postTextController.text,
-                        context: context,
-                        repliedTo: widget.post.id,
-                        repliedToUserId: widget.post.uid,
-                      );
-                      postTextController.text = '';
-                    },
+                  CircleAvatar(
+                    backgroundColor: const Color(0xFF128C7E),
+                    radius: 25,
+                    child: IconButton(
+                      icon: const Icon(Icons.send, color: Pallete.whiteColor),
+                      onPressed: () {
+                        ref.read(postControllerProvider.notifier).sharePost(
+                          images: [],
+                          text: postTextController.text,
+                          context: context,
+                          repliedTo: widget.post.id,
+                          repliedToUserId: widget.post.uid,
+                        );
+                        postTextController.text = '';
+                      },
+                    ),
                   ),
                 ],
               ),

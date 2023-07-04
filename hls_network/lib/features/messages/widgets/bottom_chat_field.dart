@@ -63,6 +63,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      style: const TextStyle(color: Colors.white),
                       focusNode: focusNode,
                       controller: _messageController,
                       onChanged: (val) {
@@ -80,8 +81,9 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                         filled: true,
                         fillColor: currentTheme.brightness == Brightness.dark
                             ? Pallete.searchBarColor
-                            : Pallete.whiteColor,
+                            : Pallete.tealColor,
                         hintText: 'Type a message',
+                        hintStyle: const TextStyle(color: Colors.white54),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20.0),
                           borderSide: const BorderSide(
@@ -103,10 +105,9 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                       backgroundColor: const Color(0xFF128C7E),
                       radius: 25,
                       child: GestureDetector(
-                        onTap: ()=>sendTextMessage(currentUser),
+                        onTap: () => sendTextMessage(currentUser),
                         child: Icon(
-                          isShowSendButton
-                              ? Icons.send : null,
+                          isShowSendButton ? Icons.send : null,
                           color: Colors.white,
                         ),
                       ),

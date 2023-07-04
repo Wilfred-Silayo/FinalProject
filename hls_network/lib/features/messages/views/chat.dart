@@ -26,6 +26,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:AppBar(
+        centerTitle: false,
         title:ListTile(
           leading:CustomCircularAvator(photoUrl: widget.receiver.profilePic,radius: 25,),
           title:Text(widget.receiver.fullName),

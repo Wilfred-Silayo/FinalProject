@@ -9,7 +9,7 @@ class Pallete {
   static const Color tealColor = Color.fromRGBO(55, 103, 138, 1);
   static const Color redColor = Color.fromARGB(255, 223, 77, 126);
   static const Color backgroundColor = Color.fromRGBO(19, 28, 33, 1);
-  static const Color textColor = Color.fromRGBO(241, 241, 242, 1);
+  static const Color textColor = Color.fromRGBO(255, 255, 255, 1);
   static const Color appBarColor = Color.fromRGBO(31, 44, 52, 1);
   static const Color messageColor = Color.fromRGBO(5, 96, 98, 1);
   static const Color senderMessageColor = Color.fromRGBO(37, 45, 49, 1);
@@ -55,8 +55,8 @@ class Pallete {
 //light theme
   static var lightModeAppTheme = ThemeData.light().copyWith(
     brightness: Brightness.light,
-    scaffoldBackgroundColor: whiteColor,
-    cardColor: textColor,
+    scaffoldBackgroundColor: textColor,
+    cardColor: whiteColor,
     appBarTheme: const AppBarTheme(
       backgroundColor: tealColor,
       elevation: 0,
