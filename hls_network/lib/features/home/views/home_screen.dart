@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hls_network/features/conferences/screens/common/join_screen.dart';
 import 'package:hls_network/features/messages/views/search_user.dart';
 import 'package:hls_network/features/posts/views/create_post.dart';
 import 'package:hls_network/features/posts/widgets/appbar.dart';
@@ -23,7 +24,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   static const List<Widget> pages = [
     PostList(),
     Search(),
-    Conferences(),
+    JoinScreen(),
     NotificationView(),
     DirectMessages(),
   ];
@@ -39,7 +40,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       backgroundColor: ref.read(themeNotifierProvider).colorScheme.primary,
       builder: (context) => SizedBox(
-        height: 400,
+        height: 300,
         child: ListView(
           children: [
             const SizedBox(height: 5),
@@ -53,23 +54,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.message_outlined),
               title: const Text('New Chat'),
-              onTap: () {Navigator.push(context, SearchUser.route());},
+              onTap: () {
+                Navigator.push(context, SearchUser.route());
+              },
             ),
             ListTile(
-              leading: const Icon(Icons.keyboard_voice),
-              title: const Text('New audio conference'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.video_call),
-              title: const Text('New video conference'),
-              onTap: () {},
+              leading: const Icon(Icons.meeting_room_sharp),
+              title: const Text('New conference'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const JoinScreen(),
+                  ),
+                );
+              },
             ),
           ],
         ),
       ),
     );
-    
   }
 
   @override

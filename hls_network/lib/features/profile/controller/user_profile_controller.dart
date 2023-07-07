@@ -20,11 +20,12 @@ final userProfileControllerProvider =
   );
 });
 
-final getUserPostsProvider = StreamProvider.family((ref, String uid){
+final getUserPostsProvider = StreamProvider.family((ref, String uid) {
   final userProfileController =
       ref.watch(userProfileControllerProvider.notifier);
   return userProfileController.getUserPosts(uid);
 });
+
 
 final getLatestUserProfileDataProvider =
     StreamProvider.family((ref, String uid) {
@@ -68,30 +69,32 @@ class UserProfileController extends StateNotifier<bool> {
     required BuildContext context,
     required File? bannerFile,
     required File? profileFile,
-    required UserModel currentUser
+    required UserModel currentUser,
   }) async {
     state = true;
 
+    UserModel updatedUserModel =
+        userModel.copyWith(); 
+
+
     if (bannerFile != null) {
       final bannerUrl = await _storageAPI.uploadImage('banner', [bannerFile]);
-       userModel = userModel.copyWith(
-        bannerPic: bannerUrl[0],
-      );
+      updatedUserModel = updatedUserModel.copyWith(bannerPic: bannerUrl[0]);
     }
 
     if (profileFile != null) {
       final profileUrl =
           await _storageAPI.uploadImage('profile', [profileFile]);
-      userModel = userModel.copyWith(
-        profilePic: profileUrl[0],
-      );
+      updatedUserModel = updatedUserModel.copyWith(profilePic: profileUrl[0]);
     }
 
-    if (userModel.following.contains(currentUser.uid)) {
-      userModel.following.remove(currentUser.uid);
-    } 
+    if (updatedUserModel.following.contains(currentUser.uid)) {
+      updatedUserModel.following.remove(currentUser.uid);
+      updatedUserModel =
+          updatedUserModel.copyWith(following: updatedUserModel.following);
+    }
 
-    final res = await _userAPI.updateUserData(userModel);
+    final res = await _userAPI.updateUserData(updatedUserModel);
     state = false;
     res.fold(
       (l) => showSnackBar(context, l.message),
@@ -104,29 +107,36 @@ class UserProfileController extends StateNotifier<bool> {
     required BuildContext context,
     required UserModel currentUser,
   }) async {
-    // already following
-    if (currentUser.following.contains(user.uid)) {
-      user.followers.remove(currentUser.uid);
-      currentUser.following.remove(user.uid);
-    } else {
-      user.followers.add(currentUser.uid);
-      currentUser.following.add(user.uid);
+    UserModel updatedUser = user.copyWith();
+    UserModel updatedCurrentUser = currentUser.copyWith();
+
+    // Already following
+    if (updatedCurrentUser.following.contains(user.uid)) {
+      updatedUser.followers.remove(updatedCurrentUser.uid);
+      updatedCurrentUser.following.remove(user.uid);
+    }
+     if (updatedCurrentUser.following.contains(updatedCurrentUser.uid)) {
+      updatedCurrentUser.following.remove(updatedCurrentUser.uid);
+    }
+    
+     else {
+      updatedUser.followers.add(updatedCurrentUser.uid);
+      updatedCurrentUser.following.add(user.uid);
     }
 
-    user = user.copyWith(followers: user.followers);
-    currentUser = currentUser.copyWith(
-      following: currentUser.following,
-    );
+    updatedUser = updatedUser.copyWith(followers: updatedUser.followers);
+    updatedCurrentUser =
+        updatedCurrentUser.copyWith(following: updatedCurrentUser.following);
 
-    final res = await _userAPI.followUser(user);
+    final res = await _userAPI.followUser(updatedUser);
     res.fold((l) => showSnackBar(context, l.message), (r) async {
-      final res2 = await _userAPI.addToFollowing(currentUser);
+      final res2 = await _userAPI.addToFollowing(updatedCurrentUser);
       res2.fold((l) => showSnackBar(context, l.message), (r) {
         _notificationController.createNotification(
-          text: '${currentUser.username} followed you!',
+          text: '${updatedCurrentUser.username} followed you!',
           postId: '',
           notificationType: NotificationType.follow,
-          uid: user.uid,
+          uid: updatedUser.uid,
         );
       });
     });
