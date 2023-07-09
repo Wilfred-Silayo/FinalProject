@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hls_network/features/home/views/home_screen.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
 import '../../constants/colors.dart';
@@ -16,7 +17,6 @@ import '../../widgets/common/meeting_controls/meeting_action_bar.dart';
 import '../../widgets/common/participant/participant_list.dart';
 import '../../widgets/conference-call/conference_participant_grid.dart';
 import '../../widgets/conference-call/conference_screenshare_view.dart';
-
 
 class ConfereneceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
@@ -319,9 +319,9 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
         showSnackBarMessage(
             message: "Meeting left due to $errorMsg !!", context: context);
       }
-      Navigator.pushAndRemoveUntil(
+     Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const JoinScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
           (route) => false);
     });
 

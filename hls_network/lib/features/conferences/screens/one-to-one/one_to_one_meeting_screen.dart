@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hls_network/features/home/views/home_screen.dart';
 import 'package:videosdk/videosdk.dart';
 import '../../constants/colors.dart';
 import '../../widgets/common/app_bar/web_meeting_appbar.dart';
@@ -326,7 +327,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       }
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const JoinScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
           (route) => false);
     });
 

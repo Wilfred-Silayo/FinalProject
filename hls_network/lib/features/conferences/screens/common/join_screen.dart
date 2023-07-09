@@ -19,6 +19,7 @@ import '../one-to-one/one_to_one_meeting_screen.dart';
 
 // Join Screen
 class JoinScreen extends StatefulWidget {
+  
   const JoinScreen({Key? key}) : super(key: key);
 
   @override

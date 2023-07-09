@@ -10,7 +10,7 @@ import 'package:hls_network/utils/loading_page.dart';
 import 'features/auth/views/login.dart';
 import 'package:responsive_framework/breakpoint.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
-import 'package:window_manager/window_manager.dart';
+import 'package:window_manager/window_manager.dart'; 
 import 'dart:io';
 import 'package:flutter/foundation.dart';
     

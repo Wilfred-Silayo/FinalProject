@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:hls_network/features/messages/views/search_user.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:videosdk/videosdk.dart';
 import '../../../constants/colors.dart';
 import '../../../utils/api.dart';
@@ -50,7 +52,7 @@ class MeetingAppBarState extends State<MeetingAppBar> {
             : CrossFadeState.showSecond,
         secondChild: const SizedBox.shrink(),
         firstChild: Padding(
-          padding: const EdgeInsets.fromLTRB(12.0,10.0,8.0,0.0),
+          padding: const EdgeInsets.fromLTRB(12.0, 10.0, 8.0, 0.0),
           child: Row(
             children: [
               if (widget.recordingState == "RECORDING_STARTING" ||
@@ -90,6 +92,26 @@ class MeetingAppBarState extends State<MeetingAppBar> {
                                 message: "Meeting ID has been copied.",
                                 context: context);
                           },
+                        ),
+                        const SizedBox(width: 8,),
+                        IconButton(
+                          onPressed: () {
+                            Share.share(widget.meeting.id);
+                          },
+                          icon: const Icon(
+                            Icons.share_outlined,
+                            size: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 8,),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(context, SearchUser.route());
+                          },
+                          icon: const Icon(
+                            Icons.send_outlined,
+                            size: 16,
+                          ),
                         ),
                       ],
                     ),

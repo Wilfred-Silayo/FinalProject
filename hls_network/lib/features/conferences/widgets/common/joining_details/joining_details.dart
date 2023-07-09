@@ -15,6 +15,7 @@ class JoiningDetails extends ConsumerStatefulWidget {
       required this.isCreateMeeting,
       required this.onClickMeetingJoin})
       : super(key: key);
+      
 
   @override
   ConsumerState<JoiningDetails> createState() => _JoiningDetailsState();

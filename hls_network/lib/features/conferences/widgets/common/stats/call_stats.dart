@@ -108,8 +108,8 @@ class _CallStatsState extends State<CallStats> {
     if (packetLossPercent.isNaN) {
       packetLossPercent = 0.0;
     }
-    double jitter = stats['jitter'] ?? 0.0;
-    double rtt = stats['rtt'] ?? 0.0;
+    double jitter = (stats['jitter'] ?? 0).toDouble(); 
+    double rtt = (stats['rtt'] ?? 0).toDouble(); 
     double? _score = stats.isNotEmpty ? 100 : null;
     if (_score != null) {
       _score -= packetLossPercent * 50 > 50 ? 50 : packetLossPercent * 50;
@@ -117,7 +117,7 @@ class _CallStatsState extends State<CallStats> {
       _score -= ((rtt / 300) * 25 > 25 ? 25 : (rtt / 300) * 25);
     }
     setState(() {
-      score = _score != null ? (_score / 10).toInt() : null;
+      score = _score != null ? (_score ~/ 10).toInt() : null;
     });
   }
 
